@@ -1,0 +1,9 @@
+node_modules
+.git
+.vscode
+wrangler.json
+package.json
+package-lock.json
+README.md
+DEPLOY.md
+.gitignore
