@@ -58,9 +58,10 @@
                 <ul class="nav-links" id="nav-links">
                     <li><a href="index.html">Trang Chủ</a></li>
                     <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="orders.html">Đơn Hàng</a></li>
                     <li><a href="index.html#contact">Liên Hệ</a></li>
                 </ul>
-                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                <div class="header-actions">
                     <div class="cart-icon">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
@@ -70,27 +71,88 @@
         </div>
     </header>
 
-    <div class="section-padding" style="margin-top: 60px;">
+    <div class="section-padding page-section">
         <div class="container" id="product-detail-view">
             <!-- Loaded dynamically -->
-        </div>
-    </div>
+            <script src="script.js"></script>
+            <script>
+                const LOCAL_FALLBACK = [
+                    {
+                        "id": 1,
+                        "name": "Trà Tân Cương Đặc Biệt",
+                        "price": 450000,
+                        "category": "Cao Cấp",
+                        "image": "images/product-1.png",
+                        "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu."
+                    },
+                    {
+                        "id": 2,
+                        "name": "Trà Móc Câu Hảo Hạng",
+                        "price": 320000,
+                        "category": "Truyền Thống",
+                        "image": "images/product-2.png",
+                        "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn."
+                    },
+                    {
+                        "id": 3,
+                        "name": "Trà Nõn Tôm Vương Giả",
+                        "price": 850000,
+                        "category": "Thượng Hạng",
+                        "image": "images/product-1.png",
+                        "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất."
+                    },
+                    {
+                        "id": 4,
+                        "name": "Trà Shan Tuyết Cổ Thụ",
+                        "price": 550000,
+                        "category": "Cao Cấp",
+                        "image": "images/product-2.png",
+                        "desc": "Thu hái từ những cây chè cổ thụ trên núi cao, hương vị tinh khiết."
+                    },
+                    {
+                        "id": 5,
+                        "name": "Trà Lài Tự Nhiên",
+                        "price": 280000,
+                        "category": "Hương Hoa",
+                        "image": "images/product-1.png",
+                        "desc": "Ướp hương hoa lài tự nhiên, thơm ngát, dễ uống."
+                    },
+                    {
+                        "id": 6,
+                        "name": "Trà Sen Tây Hồ",
+                        "price": 1200000,
+                        "category": "Thượng Hạng",
+                        "image": "images/product-2.png",
+                        "desc": "Tinh hoa trà Việt. Ướp trong bông sen bách diệp hồ Tây."
+                    }
+                ];
 
-    <script src="script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            const products = loadProducts();
+                function getSafeProducts() {
+                    if (typeof loadProducts === 'function') {
+                        const p = loadProducts();
+                        if (p && p.length > 0) return p;
+                    }
+                    return LOCAL_FALLBACK;
+                }
 
-            const product = products.find(p => p.id == id);
+                function renderDetail() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const id = urlParams.get('id');
+                    const products = getSafeProducts();
 
-            if (product) {
-                document.title = `${product.name} - Trà Thái Nguyên`;
-                document.getElementById('product-detail-view').innerHTML = `
+                    // If checking fails
+                    if (products.length === 0) return;
+
+                    const product = products.find(p => p.id == id);
+
+                    if (product) {
+                        document.title = `${product.name} - Trà Thái Nguyên`;
+                        // dynamic meta tag update would be good but basic title is fine
+
+                        document.getElementById('product-detail-view').innerHTML = `
                     <div class="detail-container fade-in visible">
                         <div class="detail-image">
-                            <img src="${product.image}" alt="${product.name}">
+                            <img src="${product.image}" alt="${product.name}" loading="lazy">
                         </div>
                         <div class="detail-info">
                             <span style="color: var(--color-accent); text-transform: uppercase; letter-spacing: 1px;">
@@ -99,8 +161,7 @@
                             <h1>${product.name}</h1>
                             <div class="detail-price">${Number(product.price).toLocaleString('vi-VN')}₫</div>
                             <p class="detail-desc">
-                                Sự kết hợp hoàn hảo giữa hương vị truyền thống và quy trình chế biến hiện đại. 
-                                Búp trà được hái vào lúc sáng sớm khi sương còn đọng trên lá, mang lại vị chát dịu hậu ngọt sâu.
+                                ${product.desc || 'Sự kết hợp hoàn hảo giữa hương vị truyền thống và quy trình chế biến hiện đại.'}
                             </p>
                             
                             <div style="display: flex; gap: 1rem;">
@@ -115,13 +176,55 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Reviews Section -->
+                    <div class="reviews-section" style="margin-top: 4rem;">
+                        <h2 class="section-title" style="font-size: 2rem; text-align: left;">Đánh Giá Khách Hàng</h2>
+                        <div class="reviews-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                            <div class="review-item" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                                <div style="color: #f1c40f; margin-bottom: 0.5rem;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                                <p style="font-style: italic;">"Trà pha nước rất xanh, hương thơm tự nhiên. Tôi đã mua lần thứ 3 và rất hài lòng với chất lượng."</p>
+                                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem; font-weight: bold;">- Anh Tuấn (Hà Nội)</p>
+                            </div>
+                            <div class="review-item" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                                <div style="color: #f1c40f; margin-bottom: 0.5rem;"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                                <p style="font-style: italic;">"Đóng gói rất cẩn thận, giao hàng nhanh. Trà uống có hậu ngọt sâu, đúng chất trà Tân Cương."</p>
+                                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem; font-weight: bold;">- Chị Lan (TP.HCM)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Products Section -->
+                    <div class="related-products" style="margin-top: 4rem; border-top: 1px solid #eee; padding-top: 4rem;">
+                        <h2 class="section-title" style="font-size: 2rem;">Sản Phẩm Có Thể Bạn Thích</h2>
+                        <div id="related-products-grid" class="products-grid" style="margin-top: 2rem;">
+                            <!-- Related Loaded Here -->
+                        </div>
+                    </div>
                 `;
-                attachCartListeners();
-            } else {
-                document.getElementById('product-detail-view').innerHTML = `<h2>Không tìm thấy sản phẩm!</h2>`;
-            }
-        });
-    </script>
+
+                        // Load related products
+                        setTimeout(() => {
+                            if (typeof renderRelatedProducts === 'function') {
+                                renderRelatedProducts('related-products-grid', product.id);
+                            }
+                        }, 100);
+
+                        if (typeof attachCartListeners === 'function') {
+                            attachCartListeners();
+                        }
+                    } else {
+                        document.getElementById('product-detail-view').innerHTML = `<h2>Không tìm thấy sản phẩm!</h2>`;
+                    }
+                }
+
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    renderDetail();
+                } else {
+                    document.addEventListener('DOMContentLoaded', renderDetail);
+                }
+                document.addEventListener('appReady', renderDetail);
+            </script>
 </body>
 
 </html>

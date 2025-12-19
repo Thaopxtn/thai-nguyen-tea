@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - Trà Thái Nguyên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .checkout-form,
+        .order-summary {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-row.total {
+            border-bottom: none;
+            border-top: 2px solid #eee;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            color: var(--color-primary);
+        }
+
+        .payment-methods {
+            margin-top: 1rem;
+        }
+
+        .payment-option {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .payment-option:hover,
+        .payment-option.active {
+            border-color: var(--color-primary);
+            background-color: rgba(15, 76, 58, 0.05);
+        }
+
+        .payment-option input {
+            accent-color: var(--color-primary);
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="header" class="scrolled">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="orders.html">Đơn Hàng</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-padding" style="margin-top: 60px;">
+        <div class="container">
+            <h1 class="section-title">Thanh Toán</h1>
+
+            <form id="checkout-form" onsubmit="handleCheckout(event)">
+                <div class="checkout-container">
+                    <!-- Billing Details -->
+                    <div class="checkout-form">
+                        <div class="form-section">
+                            <h3><i class="fas fa-user"></i> Thông Tin Người Nhận</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Họ và tên *</label>
+                                    <input type="text" id="fullname" required placeholder="Nguyễn Văn A">
+                                </div>
+                                <div class="form-group">
+                                    <label>Số điện thoại *</label>
+                                    <input type="tel" id="phone" required placeholder="09xx xxx xxx">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email (Tùy chọn)</label>
+                                <input type="email" id="email" placeholder="email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ nhận hàng *</label>
+                                <input type="text" id="address" required placeholder="Số nhà, đường, phường/xã...">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tỉnh/Thành phố *</label>
+                                    <select id="city" required>
+                                        <option value="">Chọn Tỉnh/Thành</option>
+                                        <option value="Hà Nội">Hà Nội</option>
+                                        <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                                        <option value="Đà Nẵng">Đà Nẵng</option>
+                                        <option value="Thái Nguyên">Thái Nguyên</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quận/Huyện</label>
+                                    <input type="text" placeholder="Quận/Huyện">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Ghi chú đơn hàng</label>
+                                <textarea rows="3" placeholder="Ví dụ: Giao hàng giờ hành chính..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3><i class="fas fa-credit-card"></i> Phương Thức Thanh Toán</h3>
+                            <div class="payment-methods">
+                                <label class="payment-option active" onclick="selectPayment(this)">
+                                    <input type="radio" name="payment" value="cod" checked>
+                                    <i class="fas fa-money-bill-wave" style="color: var(--color-primary);"></i>
+                                    <span>Thanh toán khi nhận hàng (COD)</span>
+                                </label>
+                                <label class="payment-option" onclick="selectPayment(this)">
+                                    <input type="radio" name="payment" value="banking">
+                                    <i class="fas fa-university" style="color: var(--color-primary);"></i>
+                                    <span>Chuyển khoản ngân hàng</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <h3>Đơn Hàng Của Bạn</h3>
+                        <div id="checkout-items">
+                            <!-- Items loaded via JS -->
+                        </div>
+
+                        <div class="order-row">
+                            <span>Tạm tính</span>
+                            <span id="subtotal">0₫</span>
+                        </div>
+                        <div class="order-row">
+                            <span>Phí vận chuyển</span>
+                            <span id="shipping">Miễn phí</span>
+                        </div>
+                        <div class="order-row total">
+                            <span>Tổng cộng</span>
+                            <span id="total">0₫</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 2rem;">
+                            Đặt Hàng Ngay
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact" style="margin-top: 4rem;">
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Inline script for checkout logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const cart = getCart();
+            if (cart.length === 0) {
+                alert('Giỏ hàng trống!');
+                window.location.href = 'products.html';
+                return;
+            }
+
+            const itemsContainer = document.getElementById('checkout-items');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalEl = document.getElementById('total');
+
+            let total = 0;
+            itemsContainer.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `
+                    <div class="order-row" style="font-size: 0.9rem;">
+                        <div>
+                            <strong>${item.name}</strong> <br>
+                            <span style="color: #666;">x ${item.quantity}</span>
+                        </div>
+                        <span>${Number(itemTotal).toLocaleString('vi-VN')}₫</span>
+                    </div>
+                `;
+            }).join('');
+
+            subtotalEl.textContent = Number(total).toLocaleString('vi-VN') + '₫';
+            totalEl.textContent = Number(total).toLocaleString('vi-VN') + '₫';
+        });
+
+        function selectPayment(element) {
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            element.querySelector('input').checked = true;
+        }
+
+        function handleCheckout(e) {
+            e.preventDefault();
+            // Simulate processing
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+
+            // Gather info
+            const orderInfo = {
+                id: 'ORD' + Date.now(),
+                customer: document.getElementById('fullname').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                total: document.getElementById('total').textContent,
+                date: new Date().toLocaleDateString('vi-VN'),
+                status: 'Chờ xử lý',
+                items: getCart()
+            };
+
+            // Save order to history (for Admin)
+            const orders = JSON.parse(localStorage.getItem('thai_nguyen_orders')) || [];
+            orders.unshift(orderInfo);
+            localStorage.setItem('thai_nguyen_orders', JSON.stringify(orders));
+
+            setTimeout(() => {
+                alert('Đặt hàng thành công! Mã đơn hàng của bạn là: ' + orderInfo.id);
+                localStorage.removeItem(CART_KEY); // Clear cart
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>

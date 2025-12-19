@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trà Thái Nguyên - Tinh Hoa Trà Việt</title>
     <meta name="description" content="Thưởng thức hương vị trà Thái Nguyên thượng hạng. Đậm đà bản sắc Việt.">
+    <meta property="og:title" content="Trà Thái Nguyên - Tinh Hoa Trà Việt">
+    <meta property="og:description" content="Thưởng thức hương vị trà Thái Nguyên thượng hạng. Đậm đà bản sắc Việt.">
+    <meta property="og:image" content="images/hero-bg.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/product-1.png">
     <link rel="stylesheet" href="styles.css">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -25,10 +30,12 @@
                     <li><a href="#home">Trang Chủ</a></li>
                     <li><a href="#products">Sản Phẩm</a></li>
                     <li><a href="#about">Câu Chuyện</a></li>
+                    <li><a href="orders.html">Đơn Hàng</a></li>
+                    <li><a href="news.html">Tin Tức</a></li>
                     <li><a href="#contact">Liên Hệ</a></li>
                 </ul>
 
-                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                <div class="header-actions">
                     <div class="cart-icon">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
@@ -101,6 +108,20 @@
         </div>
     </section>
 
+    <!-- News Section -->
+    <section class="section-padding" id="news-section" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Tin Tức & Sự Kiện</h2>
+            <div class="news-grid" id="news-grid">
+                <!-- Loaded dynamically -->
+            </div>
+            <div class="text-center" style="margin-top: 2rem;">
+                <!-- Updated Button -->
+                <button type="button" id="view-all-news-btn" class="btn btn-secondary">Xem Tất Cả Tin Tức</button>
+            </div>
+        </div>
+    </section>
+
     <!-- Newsletter -->
     <section class="section-padding" style="background-color: #f0f0f0;">
         <div class="container text-center">
@@ -149,6 +170,181 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        const LOCAL_FALLBACK = [
+            {
+                "id": 1,
+                "name": "Trà Tân Cương Đặc Biệt",
+                "price": 450000,
+                "category": "Cao Cấp",
+                "image": "images/product-1.png",
+                "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu."
+            },
+            {
+                "id": 2,
+                "name": "Trà Móc Câu Hảo Hạng",
+                "price": 320000,
+                "category": "Truyền Thống",
+                "image": "images/product-2.png",
+                "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn."
+            },
+            {
+                "id": 3,
+                "name": "Trà Nõn Tôm Vương Giả",
+                "price": 850000,
+                "category": "Thượng Hạng",
+                "image": "images/product-1.png",
+                "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất."
+            },
+            {
+                "id": 4,
+                "name": "Trà Shan Tuyết Cổ Thụ",
+                "price": 550000,
+                "category": "Cao Cấp",
+                "image": "images/product-2.png",
+                "desc": "Thu hái từ những cây chè cổ thụ trên núi cao, hương vị tinh khiết."
+            },
+            {
+                "id": 5,
+                "name": "Trà Lài Tự Nhiên",
+                "price": 280000,
+                "category": "Hương Hoa",
+                "image": "images/product-1.png",
+                "desc": "Ướp hương hoa lài tự nhiên, thơm ngát, dễ uống."
+            },
+            {
+                "id": 6,
+                "name": "Trà Sen Tây Hồ",
+                "price": 1200000,
+                "category": "Thượng Hạng",
+                "image": "images/product-2.png",
+                "desc": "Tinh hoa trà Việt. Ướp trong bông sen bách diệp hồ Tây."
+            }
+        ];
+
+        // State function helpers
+        function getSafeProducts() {
+            if (typeof loadProducts === 'function') {
+                const p = loadProducts();
+                if (p && p.length > 0) return p;
+            }
+            return LOCAL_FALLBACK;
+        }
+
+        function renderHome() {
+            const container = document.querySelector('.products-grid');
+            if (!container) return;
+
+            const products = getSafeProducts();
+            const featured = products.slice(0, 3);
+
+            if (featured.length === 0) {
+                container.innerHTML = '<p class="text-center">Đang cập nhật sản phẩm...</p>';
+                return;
+            }
+
+            container.innerHTML = featured.map(p => `
+                <div class="product-card fade-in visible">
+                    <div class="product-image">
+                        <a href="detail.html?id=${p.id}">
+                            <img src="${p.image}" alt="${p.name}">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${p.category}</span>
+                        <a href="detail.html?id=${p.id}" style="text-decoration: none; color: inherit;">
+                            <h3 class="product-title">${p.name}</h3>
+                        </a>
+                        <span class="product-price">${Number(p.price).toLocaleString('vi-VN')}₫ / 500g</span>
+                        <button class="btn btn-primary add-to-cart" data-id="${p.id}">Thêm Vào Giỏ</button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (typeof attachCartListeners === 'function') {
+                attachCartListeners();
+            }
+        }
+
+        function renderNews() {
+            const container = document.getElementById('news-grid');
+            const btn = document.getElementById('view-all-news-btn');
+            const section = document.getElementById('news-section');
+
+            if (!container || typeof loadArticles !== 'function') return;
+
+            const articles = loadArticles();
+
+            // Handle Empty State
+            if (!articles || articles.length === 0) {
+                if (section) section.style.display = 'none';
+                return;
+            }
+            if (section) section.style.display = 'block';
+
+            // Always render only 3 items for the home page teaser
+            const displayArticles = articles.slice(0, 3);
+
+            // Render Grid
+            container.innerHTML = displayArticles.map(a => `
+                <div class="news-card fade-in">
+                    <div class="news-image">
+                        <img src="${a.image || ''}" alt="${a.title || 'News'}">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date"><i class="far fa-calendar-alt"></i> ${a.date || ''}</div>
+                        <a href="#" style="text-decoration: none; color: inherit;">
+                            <h3>${a.title || 'Untitled'}</h3>
+                        </a>
+                        <p>${a.excerpt || ''}</p>
+                        <a href="#" class="read-more">Xem Chi Tiết <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update Btn to be a direct link
+            if (btn) {
+                if (articles.length <= 3) {
+                    btn.style.display = 'none';
+                } else {
+                    btn.style.display = 'inline-block';
+                    // We set the click listener in initApp or here - let's do it cleanly here
+                    // Replace with a clone to wipe any listeners from previous logic
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+
+                    newBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = 'news.html';
+                    });
+                }
+            }
+        }
+
+        // Init App
+        function initApp() {
+            renderHome();
+            renderNews();
+        }
+
+        // Initialize when ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+        document.addEventListener('appReady', () => {
+            renderHome();
+            renderNews();
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'thai_nguyen_articles') {
+                renderNews();
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin Tức - Trà Thái Nguyên</title>
+    <meta name="description" content="Cập nhật tin tức mới nhất về văn hóa trà và các hoạt động của Trà Thái Nguyên.">
+    <meta property="og:title" content="Tin Tức - Trà Thái Nguyên">
+    <meta property="og:description"
+        content="Cập nhật tin tức mới nhất về văn hóa trà và các hoạt động của Trà Thái Nguyên.">
+    <meta property="og:image" content="images/hero-bg.png">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/product-1.png">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="index.html#about">Câu Chuyện</a></li>
+                    <li><a href="orders.html">Đơn Hàng</a></li>
+                    <li><a href="news.html" class="active">Tin Tức</a></li>
+                    <li><a href="index.html#contact">Liên Hệ</a></li>
+                </ul>
+
+                <div class="header-actions">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                    <div class="menu-toggle" id="menu-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header (Uses CSS class .page-header) -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Tin Tức & Sự Kiện</h1>
+            <p>Cập nhật những thông tin mới nhất về văn hóa trà và các hoạt động của chúng tôi</p>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="section-padding" id="news-section">
+        <div class="container">
+            <div class="news-grid" id="news-grid">
+                <!-- Loaded dynamically -->
+                <div class="loading-msg">Đang tải tin tức...</div>
+            </div>
+
+            <div id="no-news-msg" class="no-news-msg">
+                <p>Chưa có tin tức nào được cập nhật.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section-padding bg-light">
+        <div class="container text-center">
+            <h2 class="mb-2">Đăng Ký Nhận Tin</h2>
+            <p class="mb-2">Nhận ưu đãi đặc biệt và kiến thức về trà hàng tuần.</p>
+            <form class="newsletter-form form-width-md">
+                <input type="email" placeholder="Địa chỉ email của bạn..." required class="input-dark">
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="index.html" class="logo footer-logo">
+                        <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                    </a>
+                    <p>Tinh hoa trà Việt - Hương vị của đất trời.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-map-marker-alt icon-width"></i> Tân Cương, Thái Nguyên</p>
+                    <p><i class="fas fa-phone icon-width"></i> 0987 654 321</p>
+                    <p><i class="fas fa-envelope icon-width"></i> contact@thainguyentea.vn</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Kết Nối</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved. Designed by Antigravity.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Dedicated News Page Logic
+        function renderNewsPage() {
+            const container = document.getElementById('news-grid');
+            const noMsg = document.getElementById('no-news-msg');
+
+            if (!container || typeof loadArticles !== 'function') return;
+
+            const articles = loadArticles();
+
+            if (!articles || articles.length === 0) {
+                container.style.display = 'none';
+                if (noMsg) noMsg.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            if (noMsg) noMsg.style.display = 'none';
+
+            // Render ALL articles
+            container.innerHTML = articles.map(a => `
+                <div class="news-card fade-in visible">
+                    <div class="news-image">
+                        <img src="${a.image || ''}" alt="${a.title || 'News'}">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date"><i class="far fa-calendar-alt"></i> ${a.date || ''}</div>
+                        <a href="#" style="text-decoration: none; color: inherit;">
+                            <h3>${a.title || 'Untitled'}</h3>
+                        </a>
+                        <p>${a.excerpt || ''}</p>
+                        <a href="#" class="read-more">Xem Chi Tiết <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize Logic
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderNewsPage);
+        } else {
+            renderNewsPage();
+        }
+
+        document.addEventListener('appReady', renderNewsPage);
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'thai_nguyen_articles') {
+                renderNewsPage();
+            }
+        });
+    </script>
+</body>
+
+</html>

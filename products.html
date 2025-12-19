@@ -19,11 +19,12 @@
                 </a>
                 <ul class="nav-links" id="nav-links">
                     <li><a href="index.html">Trang Chủ</a></li>
-                    <li><a href="products.html" class="active" style="color:var(--color-primary)">Sản Phẩm</a></li>
+                    <li><a href="products.html" class="active">Sản Phẩm</a></li>
+                    <li><a href="orders.html">Đơn Hàng</a></li>
                     <li><a href="index.html#about">Câu Chuyện</a></li>
                     <li><a href="#contact">Liên Hệ</a></li>
                 </ul>
-                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                <div class="header-actions">
                     <div class="cart-icon">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
@@ -33,7 +34,7 @@
         </div>
     </header>
 
-    <div class="section-padding" style="margin-top: 60px;">
+    <div class="section-padding page-section">
         <div class="container">
             <h1 class="section-title">Tất Cả Sản Phẩm</h1>
             <div class="products-grid" id="all-products">
@@ -47,7 +48,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <a href="#" class="logo" style="color: white; margin-bottom: 1rem; display: block;">
+                    <a href="#" class="logo footer-logo">
                         <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
                     </a>
                     <p>Tinh hoa trà Việt - Hương vị của đất trời.</p>
@@ -66,15 +67,79 @@
 
     <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        const LOCAL_FALLBACK = [
+            {
+                "id": 1,
+                "name": "Trà Tân Cương Đặc Biệt",
+                "price": 450000,
+                "category": "Cao Cấp",
+                "image": "images/product-1.png",
+                "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu."
+            },
+            {
+                "id": 2,
+                "name": "Trà Móc Câu Hảo Hạng",
+                "price": 320000,
+                "category": "Truyền Thống",
+                "image": "images/product-2.png",
+                "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn."
+            },
+            {
+                "id": 3,
+                "name": "Trà Nõn Tôm Vương Giả",
+                "price": 850000,
+                "category": "Thượng Hạng",
+                "image": "images/product-1.png",
+                "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất."
+            },
+            {
+                "id": 4,
+                "name": "Trà Shan Tuyết Cổ Thụ",
+                "price": 550000,
+                "category": "Cao Cấp",
+                "image": "images/product-2.png",
+                "desc": "Thu hái từ những cây chè cổ thụ trên núi cao, hương vị tinh khiết."
+            },
+            {
+                "id": 5,
+                "name": "Trà Lài Tự Nhiên",
+                "price": 280000,
+                "category": "Hương Hoa",
+                "image": "images/product-1.png",
+                "desc": "Ướp hương hoa lài tự nhiên, thơm ngát, dễ uống."
+            },
+            {
+                "id": 6,
+                "name": "Trà Sen Tây Hồ",
+                "price": 1200000,
+                "category": "Thượng Hạng",
+                "image": "images/product-2.png",
+                "desc": "Tinh hoa trà Việt. Ướp trong bông sen bách diệp hồ Tây."
+            }
+        ];
+
+        function getSafeProducts() {
+            if (typeof loadProducts === 'function') {
+                const p = loadProducts();
+                if (p && p.length > 0) return p;
+            }
+            return LOCAL_FALLBACK;
+        }
+
+        function renderPage() {
             const container = document.getElementById('all-products');
-            const products = loadProducts(); // From script.js
+            const products = getSafeProducts();
+
+            if (products.length === 0) {
+                container.innerHTML = '<p class="text-center">Đang cập nhật sản phẩm...</p>';
+                return;
+            }
 
             container.innerHTML = products.map(p => `
                 <div class="product-card fade-in visible">
                     <div class="product-image">
                         <a href="detail.html?id=${p.id}">
-                            <img src="${p.image}" alt="${p.name}">
+                            <img src="${p.image}" alt="${p.name}" loading="lazy">
                         </a>
                     </div>
                     <div class="product-info">
@@ -82,14 +147,27 @@
                         <a href="detail.html?id=${p.id}" style="text-decoration: none; color: inherit;">
                             <h3 class="product-title">${p.name}</h3>
                         </a>
-                        <span class="product-price">${Number(p.price).toLocaleString('vi-VN')}₫ / 500g</span>
+                        <span class="product-price">${Number(p.price).toLocaleString('vi-VN')}₫</span>
                         <button class="btn btn-primary add-to-cart" data-id="${p.id}">Thêm Vào Giỏ</button>
                     </div>
                 </div>
             `).join('');
 
-            attachCartListeners(); // From script.js
-        });
+            if (typeof attachCartListeners === 'function') {
+                attachCartListeners();
+            }
+        }
+
+        // Try to render immediately if possible, or wait
+        // This covers both cases: script.js not loaded yet, or script.js loaded but race condition
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            renderPage();
+        } else {
+            document.addEventListener('DOMContentLoaded', renderPage);
+        }
+
+        // Also listen to appReady just in case data updates later
+        document.addEventListener('appReady', renderPage);
     </script>
 </body>
 

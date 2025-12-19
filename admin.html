@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -20,6 +21,9 @@
             <ul class="nav-menu">
                 <li class="nav-item active" data-tab="dashboard">
                     <i class="fas fa-home"></i> Tổng Quan
+                </li>
+                <li class="nav-item" data-tab="orders">
+                    <i class="fas fa-shopping-bag"></i> Đơn Hàng
                 </li>
                 <li class="nav-item" data-tab="products">
                     <i class="fas fa-box"></i> Sản Phẩm
@@ -61,13 +65,78 @@
                             <p class="number" id="total-products">0</p>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="icon-bg orange"><i class="fas fa-users"></i></div>
-                        <div class="stat-info">
-                            <h3>Khách Hàng</h3>
-                            <p class="number">1,204</p>
+                </div>
+
+                <!-- Charts & Recent Orders -->
+                <div class="dashboard-widgets"
+                    style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem;">
+                    <div class="widget-card"
+                        style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <h3>Doanh Thu</h3>
+                            <select style="border: none; background: #f0f0f0; padding: 5px; border-radius: 4px;">
+                                <option>Tháng Này</option>
+                                <option>Năm Nay</option>
+                            </select>
+                        </div>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+
+                    <div class="widget-card"
+                        style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                        <h3>Đơn Hàng Mới</h3>
+                        <div id="recent-orders-list" style="margin-top: 1rem; max-height: 300px; overflow-y: auto;">
+                            <p style="text-align: center; color: #999;">Chưa có đơn hàng nào.</p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <!-- Orders View -->
+            <section id="orders" class="view">
+                <div class="header">
+                    <h1>Quản Lý Đơn Hàng</h1>
+                </div>
+                <div class="toolbar" style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <div style="flex: 1;">
+                        <input type="text" id="order-search" placeholder="Tìm kiếm mã đơn, khách hàng..."
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 300px;">
+                    </div>
+                    <div>
+                        <select id="order-filter-status"
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Chờ xử lý">Chờ xử lý</option>
+                            <option value="Đang giao">Đang giao</option>
+                            <option value="Đã hoàn thành">Đã hoàn thành</option>
+                            <option value="Đã hủy">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="order-sort" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="price-high">Tổng tiền cao -> thấp</option>
+                            <option value="price-low">Tổng tiền thấp -> cao</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Ngày Đặt</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="order-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -98,17 +167,31 @@
                 </div>
             </section>
 
-            <!-- Articles View (Placeholder) -->
+            <!-- Articles View -->
             <section id="articles" class="view">
                 <div class="header">
                     <h1>Bài Viết Blog</h1>
-                    <button class="btn-primary"><i class="fas fa-plus"></i> Viết Bài Mới</button>
+                    <button class="btn-primary" onclick="openArticleModal()">
+                        <i class="fas fa-plus"></i> Viết Bài Mới
+                    </button>
                 </div>
-                <div class="placeholder-content">
-                    <i class="fas fa-pencil-alt" style="font-size: 3rem; color: #ccc;"></i>
-                    <p>Tính năng đang phát triển...</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tiêu Đề</th>
+                                <th>Ngày Đăng</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="article-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
+
 
             <!-- Settings View (Placeholder) -->
             <section id="settings" class="view">
@@ -162,6 +245,59 @@
                         <button type="submit" class="btn-primary">Lưu</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div id="article-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="article-modal-title">Viết Bài Mới</h2>
+                <span class="close" onclick="closeArticleModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="article-form">
+                    <input type="hidden" id="article-id">
+                    <div class="form-group">
+                        <label>Tiêu Đề</label>
+                        <input type="text" id="article-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình Ảnh (URL)</label>
+                        <input type="text" id="article-image" value="images/hero-bg.png">
+                    </div>
+                    <div class="form-group">
+                        <label>Nội Dung Ngắn</label>
+                        <textarea id="article-excerpt" rows="3"
+                            style="width: 100%; padding: 0.8rem; border: 1px solid var(--gray); border-radius: 4px;"
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày Đăng</label>
+                        <input type="date" id="article-date" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeArticleModal()">Hủy</button>
+                        <button type="submit" class="btn-primary">Lưu Bài Viết</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Chi Tiết Đơn Hàng</h2>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="order-detail-content">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="modal-actions" style="border-top: 1px solid #eee; padding-top: 1rem; margin-top: 1rem;">
+                <button type="button" class="btn-primary" onclick="closeOrderModal()">Đóng</button>
             </div>
         </div>
     </div>

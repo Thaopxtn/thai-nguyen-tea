@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn Hàng Của Tôi - Trà Thái Nguyên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <header id="header" class="scrolled">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="orders.html" class="active">Đơn Hàng</a></li>
+                </ul>
+                <div class="header-actions">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-padding page-section">
+        <div class="container cart-container">
+            <h1 class="section-title">Lịch Sử Đơn Hàng</h1>
+
+            <div id="orders-content">
+                <div class="toolbar"
+                    style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; justify-content: space-between;">
+                    <div>
+                        <select id="user-order-filter" class="form-select" onchange="renderOrders()"
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Chờ xử lý">Chờ xử lý</option>
+                            <option value="Đang giao">Đang giao</option>
+                            <option value="Đã hoàn thành">Đã hoàn thành</option>
+                            <option value="Đã hủy">Đã hủy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="user-order-sort" class="form-select" onchange="renderOrders()"
+                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="price-high">Tổng tiền cao -> thấp</option>
+                            <option value="price-low">Tổng tiền thấp -> cao</option>
+                        </select>
+                    </div>
+                </div>
+                <table class="cart-table" id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Ngày Đặt</th>
+                            <th>Tổng Tiền</th>
+                            <th>Trạng Thái</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-body">
+                        <!-- Items -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="empty-orders-msg" class="empty-cart" style="display: none;">
+                <i class="fas fa-box-open empty-icon"></i>
+                <h2>Chưa có đơn hàng nào</h2>
+                <p class="mb-2">Bạn chưa đặt mua sản phẩm nào của chúng tôi.</p>
+                <a href="products.html" class="btn btn-primary">Mua Sắm Ngay</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-content"
+            style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+            <span class="close" onclick="closeOrderModal()"
+                style="position: absolute; right: 20px; top: 15px; font-size: 1.5rem; cursor: pointer;">&times;</span>
+            <h2 style="margin-bottom: 1.5rem; color: var(--color-primary);">Chi Tiết Đơn Hàng</h2>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const ORDERS_KEY = 'thai_nguyen_orders';
+
+        function loadOrders() {
+            return JSON.parse(localStorage.getItem(ORDERS_KEY)) || [];
+        }
+
+        function renderOrders() {
+            const orders = loadOrders();
+            const tbody = document.getElementById('orders-body');
+            const emptyMsg = document.getElementById('empty-orders-msg');
+            const content = document.getElementById('orders-content');
+
+            if (orders.length === 0) {
+                content.style.display = 'none';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+
+            content.style.display = 'block';
+            emptyMsg.style.display = 'none';
+            tbody.innerHTML = '';
+
+            // Filter & Sort Logic
+            let filteredOrders = [...orders];
+
+            // Filter Status
+            const statusFilter = document.getElementById('user-order-filter').value;
+            if (statusFilter) {
+                filteredOrders = filteredOrders.filter(o => o.status === statusFilter);
+            }
+
+            // Sort
+            const sortType = document.getElementById('user-order-sort').value;
+            filteredOrders.sort((a, b) => {
+                if (sortType === 'newest') return b.id - a.id;
+                if (sortType === 'oldest') return a.id - b.id;
+
+                const priceA = parseInt(String(a.total).replace(/\D/g, '')) || 0;
+                const priceB = parseInt(String(b.total).replace(/\D/g, '')) || 0;
+
+                if (sortType === 'price-high') return priceB - priceA;
+                if (sortType === 'price-low') return priceA - priceB;
+                return 0;
+            });
+
+
+            filteredOrders.forEach(order => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${order.id}</strong></td>
+                    <td>${order.date}</td>
+                    <td>${order.total}</td>
+                    <td><span class="status-badge status-${getStatusClass(order.status)}">${order.status}</span></td>
+                    <td>
+                        <button class="btn-sm btn-primary" onclick="viewOrder('${order.id}')">Xem</button>
+                        ${order.status === 'Chờ xử lý' ? `<button class="btn-sm btn-danger" onclick="cancelOrder('${order.id}')" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-left: 5px; cursor: pointer;">Hủy</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getStatusClass(status) {
+            if (status === 'Chờ xử lý') return 'pending';
+            if (status === 'Đang giao') return 'shipping';
+            if (status === 'Đã hoàn thành') return 'completed';
+            if (status === 'Đã hủy') return 'cancelled';
+            return 'default';
+        }
+
+        function viewOrder(id) {
+            const orders = loadOrders();
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <p><strong>Mã Đơn:</strong> ${order.id}</p>
+                    <p><strong>Ngày Đặt:</strong> ${order.date}</p>
+                    <p><strong>Trạng Thái:</strong> ${order.status}</p>
+                    <p><strong>Địa Chỉ:</strong> ${order.address}, ${order.phone}</p>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #f8f9fa;">
+                        <tr>
+                            <th style="padding: 8px; text-align: left;">Sản Phẩm</th>
+                            <th style="padding: 8px; text-align: center;">SL</th>
+                            <th style="padding: 8px; text-align: right;">Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${order.items.map(item => `
+                            <tr style="border-bottom: 1px solid #eee;">
+                                <td style="padding: 8px;">${item.name}</td>
+                                <td style="padding: 8px; text-align: center;">${item.quantity}</td>
+                                <td style="padding: 8px; text-align: right;">${Number(item.price * item.quantity).toLocaleString('vi-VN')}₫</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="padding: 8px; text-align: right; font-weight: bold;">Tổng cộng:</td>
+                            <td style="padding: 8px; text-align: right; font-weight: bold; color: var(--color-primary);">${order.total}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').style.display = 'none';
+        }
+
+        function cancelOrder(id) {
+            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')) {
+                const orders = loadOrders();
+                const orderIndex = orders.findIndex(o => o.id === id);
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = 'Đã hủy';
+                    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+                    renderOrders();
+                    alert('Đã hủy đơn hàng thành công.');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderOrders();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('order-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

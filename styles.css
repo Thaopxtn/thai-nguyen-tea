@@ -130,6 +130,14 @@ img {
     margin-bottom: 4rem;
 }
 
+.mt-2 {
+    margin-top: 2rem;
+}
+
+.mt-4 {
+    margin-top: 4rem;
+}
+
 /* Header */
 header {
     position: fixed;
@@ -143,6 +151,7 @@ header {
 
 header.scrolled {
     background-color: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-sm);
     padding: 1rem 0;
@@ -630,4 +639,275 @@ footer {
 .empty-cart {
     text-align: center;
     padding: 4rem 0;
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background-color: white;
+    color: var(--color-text);
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--color-primary);
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    min-width: 300px;
+}
+
+.toast.hide {
+    animation: slideOutRight 0.4s ease forwards;
+}
+
+.toast i {
+    color: var(--color-primary);
+    font-size: 1.2rem;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Fly to Cart Animation */
+.flying-img {
+    position: fixed;
+    z-index: 9999;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: var(--shadow-md);
+    transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    opacity: 0.9;
+}
+
+/* Additional Utilities */
+.header-actions {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.page-section {
+    margin-top: 60px;
+}
+
+.footer-logo {
+    color: white !important;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+
+.ml-1 {
+    margin-left: 1rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.news-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.news-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.news-card:hover .news-image img {
+    transform: scale(1.05);
+}
+
+.news-content {
+    padding: 1.5rem;
+}
+
+.news-date {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.news-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.8rem;
+    color: var(--color-primary);
+}
+
+.news-content p {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.read-more {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+
+/* Status Badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+.status-shipping {
+    background-color: #b8daff;
+    color: #004085;
+}
+
+.status-completed {
+    background-color: #c3e6cb;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Page Header & Misc Fixes (Moved from Inline) */
+.page-header {
+    /* Added gradient overlay for better text contrast */
+    background: linear-gradient(rgba(15, 76, 58, 0.7), rgba(15, 76, 58, 0.7)), url('images/hero-bg.png');
+    background-size: cover;
+    background-position: center;
+    padding: 6rem 0;
+    text-align: center;
+    color: white;
+    /* Increased top margin to clear fixed header */
+    /* Increased top margin to clear fixed header */
+    margin-top: 80px;
+}
+
+.page-header h1 {
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+.cert-icon {
+    font-size: 2.5rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+}
+
+.cert-title {
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.cert-desc {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--color-text-light);
+}
+
+.loading-msg {
+    text-align: center;
+    width: 100%;
+    padding: 2rem;
+}
+
+.btn-outline-white {
+    border: 1px solid white;
+}
+
+.no-news-msg {
+    display: none;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Utilities for cleanup */
+.bg-light {
+    background-color: #f0f0f0;
+}
+
+.form-width-md {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.input-dark {
+    color: black !important;
+    border-color: #ccc !important;
+}
+
+.icon-width {
+    width: 20px;
 }

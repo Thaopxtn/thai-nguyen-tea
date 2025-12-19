@@ -1,22 +1,134 @@
 // --- Global Global Constants ---
 const STORAGE_KEY = 'thai_nguyen_tea_products';
 const CART_KEY = 'thai_nguyen_tea_cart';
-const DEFAULT_PRODUCTS = [
-    { id: 1, name: "Trà Tân Cương Đặc Biệt", price: 450000, category: "Cao Cấp", image: "images/product-1.png" },
-    { id: 2, name: "Trà Móc Câu Hảo Hạng", price: 320000, category: "Truyền Thống", image: "images/product-2.png" },
-    { id: 3, name: "Trà Nõn Tôm Vương Giả", price: 850000, category: "Thượng Hạng", image: "images/product-1.png" }
+const ARTICLES_KEY = 'thai_nguyen_articles';
+
+const FALLBACK_PRODUCTS = [
+    {
+        "id": 1,
+        "name": "Trà Tân Cương Đặc Biệt",
+        "price": 450000,
+        "category": "Cao Cấp",
+        "image": "images/product-1.png",
+        "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu."
+    },
+    {
+        "id": 2,
+        "name": "Trà Móc Câu Hảo Hạng",
+        "price": 320000,
+        "category": "Truyền Thống",
+        "image": "images/product-2.png",
+        "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn."
+    },
+    {
+        "id": 3,
+        "name": "Trà Nõn Tôm Vương Giả",
+        "price": 850000,
+        "category": "Thượng Hạng",
+        "image": "images/product-1.png",
+        "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất."
+    },
+    {
+        "id": 4,
+        "name": "Trà Shan Tuyết Cổ Thụ",
+        "price": 550000,
+        "category": "Cao Cấp",
+        "image": "images/product-2.png",
+        "desc": "Thu hái từ những cây chè cổ thụ trên núi cao, hương vị tinh khiết."
+    },
+    {
+        "id": 5,
+        "name": "Trà Lài Tự Nhiên",
+        "price": 280000,
+        "category": "Hương Hoa",
+        "image": "images/product-1.png",
+        "desc": "Ướp hương hoa lài tự nhiên, thơm ngát, dễ uống."
+    },
+    {
+        "id": 6,
+        "name": "Trà Sen Tây Hồ",
+        "price": 1200000,
+        "category": "Thượng Hạng",
+        "image": "images/product-2.png",
+        "desc": "Tinh hoa trà Việt. Ướp trong bông sen bách diệp hồ Tây."
+    }
+];
+
+const FALLBACK_ARTICLES = [
+    {
+        "id": 1,
+        "title": "Lễ Hội Trà Thái Nguyên 2024",
+        "image": "images/hero-bg.png",
+        "date": "2024-12-20",
+        "excerpt": "Hòa mình vào không khí lễ hội đặc sắc với các hoạt động văn hóa trà truyền thống."
+    },
+    {
+        "id": 2,
+        "title": "Cách Pha Trà Ngon Đúng Điệu",
+        "image": "images/product-2.png",
+        "date": "2024-12-18",
+        "excerpt": "Hướng dẫn chi tiết từ các nghệ nhân trà để có được ấm trà thơm ngon, chuẩn vị."
+    },
+    {
+        "id": 3,
+        "title": "Tác Dụng Của Trà Xanh Với Sức Khỏe",
+        "image": "images/product-1.png",
+        "date": "2024-12-15",
+        "excerpt": "Khám phá những lợi ích tuyệt vời của trà xanh đối với sức khỏe và sắc đẹp."
+    }
 ];
 
 // --- Global Functions ---
 
 window.loadProducts = function () {
-    let products = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!products || products.length === 0) {
-        products = DEFAULT_PRODUCTS;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const parsed = stored ? JSON.parse(stored) : [];
+        if (parsed.length > 0) return parsed;
+    } catch (e) {
+        console.warn(e);
     }
-    return products;
+    return FALLBACK_PRODUCTS;
 };
+
+window.loadArticles = function () {
+    try {
+        const stored = localStorage.getItem(ARTICLES_KEY);
+        const parsed = stored ? JSON.parse(stored) : [];
+        if (parsed.length > 0) return parsed;
+    } catch (e) {
+        console.warn(e);
+    }
+    return FALLBACK_ARTICLES;
+};
+// ... (keep getCart etc)
+
+// ...
+
+// --- Initialization ---
+
+async function initData() {
+    // Try to update from JSON file if possible
+    try {
+        const response = await fetch('products.json');
+        if (response.ok) {
+            const products = await response.json();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+        }
+    } catch (error) {
+        // Ignore fetch errors, we have fallback in loadProducts
+        console.log('Using built-in product data');
+        // Ensure data exists for other apps (like Admin) that rely on localStorage
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(FALLBACK_PRODUCTS));
+        }
+
+        // Ensure articles exist
+        if (!localStorage.getItem(ARTICLES_KEY)) {
+            localStorage.setItem(ARTICLES_KEY, JSON.stringify(FALLBACK_ARTICLES));
+        }
+    }
+}
 
 window.getCart = function () {
     return JSON.parse(localStorage.getItem(CART_KEY)) || [];
@@ -127,16 +239,78 @@ window.renderCartPage = function () {
     if (totalEl) totalEl.textContent = Number(total).toLocaleString('vi-VN') + '₫';
 }
 
+// --- UI Effects ---
+
+window.showToast = function (message, type = 'success') {
+    const container = document.querySelector('.toast-container') || createToastContainer();
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    // Remove after 3s
+    setTimeout(() => {
+        toast.classList.add('hide');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 3000);
+};
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+window.flyToCart = function (imgElement) {
+    if (!imgElement) return;
+
+    const cartIcon = document.querySelector('.cart-icon');
+    if (!cartIcon) return;
+
+    const flyImg = imgElement.cloneNode();
+    flyImg.classList.add('flying-img');
+
+    const rect = imgElement.getBoundingClientRect();
+    const cartRect = cartIcon.getBoundingClientRect();
+
+    flyImg.style.top = `${rect.top}px`;
+    flyImg.style.left = `${rect.left}px`;
+    flyImg.style.width = `${rect.width}px`;
+    flyImg.style.height = `${rect.height}px`;
+
+    document.body.appendChild(flyImg);
+
+    // Force reflow
+    void flyImg.offsetWidth;
+
+    flyImg.style.top = `${cartRect.top + 10}px`;
+    flyImg.style.left = `${cartRect.left + 10}px`;
+    flyImg.style.width = '20px';
+    flyImg.style.height = '20px';
+    flyImg.style.opacity = '0.5';
+
+    flyImg.addEventListener('transitionend', () => {
+        flyImg.remove();
+        // Optional: Bump effect on cart icon
+        cartIcon.style.transform = 'scale(1.2)';
+        setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
+    });
+};
+
 window.attachCartListeners = function () {
     document.querySelectorAll('.add-to-cart').forEach(btn => {
-        // Clone to remove existing listeners to be safe (simple way)
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
 
         newBtn.addEventListener('click', (e) => {
             const qtyInput = document.querySelector('input[type="number"]');
             let qty = 1;
-            // Only use qty input if we are on detail page
             if (qtyInput && window.location.pathname.includes('detail.html')) {
                 qty = parseInt(qtyInput.value) || 1;
             }
@@ -150,21 +324,19 @@ window.attachCartListeners = function () {
             if (id) {
                 window.addToCart(id, qty);
 
-                const originalText = newBtn.textContent;
-                const originalBg = newBtn.style.backgroundColor;
+                // UI Effects
+                window.showToast(`Đã thêm ${qty} sản phẩm vào giỏ hàng!`);
 
-                newBtn.textContent = 'Đã Thêm!';
-                newBtn.style.backgroundColor = 'var(--color-primary-dark)';
+                // Find image to fly
+                let img = newBtn.closest('.product-card')?.querySelector('img');
+                if (!img && window.location.pathname.includes('detail.html')) {
+                    img = document.querySelector('.detail-image img'); // Assume detail page main image
+                }
 
-                setTimeout(() => {
-                    newBtn.textContent = originalText;
-                    newBtn.style.backgroundColor = originalBg;
-                }, 1000);
+                if (img) window.flyToCart(img);
             }
         });
     });
-
-
 }
 
 // Home Page: Render Featured
@@ -198,11 +370,54 @@ function renderFeaturedProducts() {
     window.attachCartListeners();
 }
 
-// --- Initialization ---
+window.renderRelatedProducts = function (containerId, currentProductId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const products = window.loadProducts();
+    const currentProduct = products.find(p => p.id == currentProductId);
+
+    if (!currentProduct) return;
+
+    // Filter by same category or just excludes current
+    const related = products.filter(p => p.id != currentProductId).slice(0, 3);
+
+    if (related.length === 0) {
+        container.innerHTML = '<p>Không có sản phẩm tương tự.</p>';
+        return;
+    }
+
+    container.innerHTML = related.map(p => `
+        <div class="product-card">
+            <div class="product-image">
+                <a href="detail.html?id=${p.id}">
+                    <img src="${p.image}" alt="${p.name}">
+                </a>
+            </div>
+            <div class="product-info">
+                <span class="product-category">${p.category}</span>
+                <a href="detail.html?id=${p.id}" style="text-decoration: none; color: inherit;">
+                    <h3 class="product-title">${p.name}</h3>
+                </a>
+                <span class="product-price">${Number(p.price).toLocaleString('vi-VN')}₫</span>
+                <button class="btn btn-primary add-to-cart" data-id="${p.id}">Thêm Vào Giỏ</button>
+            </div>
+        </div>
+    `).join('');
+
+    window.attachCartListeners();
+}
 
 // --- Initialization ---
 
-document.addEventListener('DOMContentLoaded', () => {
+// --- Initialization ---
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+    // Initialize Data first
+    await initData();
 
     // Header Scroll Effect
     const header = document.getElementById('header');
@@ -244,4 +459,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Init Logic
     window.updateCartBadge();
     renderFeaturedProducts();
+
+    // Dispatch event for other scripts (like products.html inline script)
+    window.appIsReady = true;
+    window.dispatchEvent(new Event('appReady'));
 });
