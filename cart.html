@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - Trà Thái Nguyên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <header id="header" class="scrolled">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="index.html#contact">Liên Hệ</a></li>
+                </ul>
+                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-padding" style="margin-top: 60px;">
+        <div class="container cart-container">
+            <h1 class="section-title">Giỏ Hàng Của Bạn</h1>
+
+            <div id="cart-content">
+                <!-- Dynamic Content -->
+                <table class="cart-table" id="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Sản Phẩm</th>
+                            <th>Giá</th>
+                            <th>Số Lượng</th>
+                            <th>Tổng</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-body">
+                        <!-- Items -->
+                    </tbody>
+                </table>
+
+                <div class="cart-summary">
+                    <div class="total-price">
+                        Tổng cộng: <span id="cart-total">0₫</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="alert('Tính năng thanh toán đang phát triển!')">Tiến Hành
+                        Thanh Toán</button>
+                    <a href="products.html" class="btn btn-accent" style="margin-left: 1rem;">Tiếp Tục Mua Sắm</a>
+                </div>
+            </div>
+
+            <div id="empty-cart-msg" class="empty-cart" style="display: none;">
+                <i class="fas fa-shopping-basket" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                <h2>Giỏ hàng trống</h2>
+                <p class="mb-2">Bạn chưa thêm sản phẩm nào vào giỏ hàng.</p>
+                <a href="products.html" class="btn btn-primary">Mua Sắm Ngay</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCartPage();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Sản Phẩm - Trà Thái Nguyên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .detail-image img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .detail-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-price {
+            font-size: 2rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .detail-desc {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .meta-info {
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="header" class="scrolled">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html">Sản Phẩm</a></li>
+                    <li><a href="index.html#contact">Liên Hệ</a></li>
+                </ul>
+                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-padding" style="margin-top: 60px;">
+        <div class="container" id="product-detail-view">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const products = loadProducts();
+
+            const product = products.find(p => p.id == id);
+
+            if (product) {
+                document.title = `${product.name} - Trà Thái Nguyên`;
+                document.getElementById('product-detail-view').innerHTML = `
+                    <div class="detail-container fade-in visible">
+                        <div class="detail-image">
+                            <img src="${product.image}" alt="${product.name}">
+                        </div>
+                        <div class="detail-info">
+                            <span style="color: var(--color-accent); text-transform: uppercase; letter-spacing: 1px;">
+                                ${product.category}
+                            </span>
+                            <h1>${product.name}</h1>
+                            <div class="detail-price">${Number(product.price).toLocaleString('vi-VN')}₫</div>
+                            <p class="detail-desc">
+                                Sự kết hợp hoàn hảo giữa hương vị truyền thống và quy trình chế biến hiện đại. 
+                                Búp trà được hái vào lúc sáng sớm khi sương còn đọng trên lá, mang lại vị chát dịu hậu ngọt sâu.
+                            </p>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                <input type="number" value="1" min="1" style="width: 60px; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                                <button class="btn btn-primary add-to-cart" data-id="${product.id}">Thêm Vào Giỏ Hàng</button>
+                            </div>
+
+                            <div class="meta-info">
+                                <p><strong>Khối lượng:</strong> 500g</p>
+                                <p><strong>Xuất xứ:</strong> Tân Cương, Thái Nguyên</p>
+                                <p><strong>Bảo quản:</strong> Nơi khô ráo, thoáng mát</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                attachCartListeners();
+            } else {
+                document.getElementById('product-detail-view').innerHTML = `<h2>Không tìm thấy sản phẩm!</h2>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

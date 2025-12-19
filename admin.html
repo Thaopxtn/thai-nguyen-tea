@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Thai Nguyen Tea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin<span>Panel</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="dashboard">
+                    <i class="fas fa-home"></i> Tổng Quan
+                </li>
+                <li class="nav-item" data-tab="products">
+                    <i class="fas fa-box"></i> Sản Phẩm
+                </li>
+                <li class="nav-item" data-tab="articles">
+                    <i class="fas fa-newspaper"></i> Bài Viết
+                </li>
+                <li class="nav-item" data-tab="settings">
+                    <i class="fas fa-cog"></i> Cài Đặt
+                </li>
+                <li class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <section id="dashboard" class="view active">
+                <div class="header">
+                    <h1>Tổng Quan</h1>
+                    <div class="user-info">Admin User</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-bg blue"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-info">
+                            <h3>Tổng Đơn Hàng</h3>
+                            <p class="number">128</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-bg green"><i class="fas fa-box"></i></div>
+                        <div class="stat-info">
+                            <h3>Sản Phẩm</h3>
+                            <p class="number" id="total-products">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-bg orange"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3>Khách Hàng</h3>
+                            <p class="number">1,204</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products View -->
+            <section id="products" class="view">
+                <div class="header">
+                    <h1>Quản Lý Sản Phẩm</h1>
+                    <button class="btn-primary" onclick="openProductModal()">
+                        <i class="fas fa-plus"></i> Thêm Mới
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Giá</th>
+                                <th>Danh Mục</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Articles View (Placeholder) -->
+            <section id="articles" class="view">
+                <div class="header">
+                    <h1>Bài Viết Blog</h1>
+                    <button class="btn-primary"><i class="fas fa-plus"></i> Viết Bài Mới</button>
+                </div>
+                <div class="placeholder-content">
+                    <i class="fas fa-pencil-alt" style="font-size: 3rem; color: #ccc;"></i>
+                    <p>Tính năng đang phát triển...</p>
+                </div>
+            </section>
+
+            <!-- Settings View (Placeholder) -->
+            <section id="settings" class="view">
+                <div class="header">
+                    <h1>Cài Đặt</h1>
+                </div>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>Tên Website</label>
+                        <input type="text" value="Thái Nguyên Tea">
+                    </div>
+                    <button class="btn-primary">Lưu Thay Đổi</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Thêm Sản Phẩm</h2>
+                <span class="close" onclick="closeProductModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="form-group">
+                        <label>Tên Sản Phẩm</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giá (VNĐ)</label>
+                        <input type="number" id="product-price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Danh Mục</label>
+                        <select id="product-category">
+                            <option value="Cao Cấp">Cao Cấp</option>
+                            <option value="Truyền Thống">Truyền Thống</option>
+                            <option value="Thượng Hạng">Thượng Hạng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình Ảnh (URL hoặc tên file)</label>
+                        <input type="text" id="product-image" value="images/product-1.png">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeProductModal()">Hủy</button>
+                        <button type="submit" class="btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trà Thái Nguyên - Tinh Hoa Trà Việt</title>
+    <meta name="description" content="Thưởng thức hương vị trà Thái Nguyên thượng hạng. Đậm đà bản sắc Việt.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#home">Trang Chủ</a></li>
+                    <li><a href="#products">Sản Phẩm</a></li>
+                    <li><a href="#about">Câu Chuyện</a></li>
+                    <li><a href="#contact">Liên Hệ</a></li>
+                </ul>
+
+                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                    <div class="menu-toggle" id="menu-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Tinh Hoa Trà Việt</h1>
+            <p>Khám phá hương vị đậm đà, tinh tế từ những đồi chè xanh mướt Thái Nguyên. <br>Kết tinh của đất trời và
+                bàn tay nghệ nhân.</p>
+            <a href="#products" class="btn btn-accent">Khám Phá Ngay</a>
+        </div>
+    </section>
+
+    <!-- Features / Intro -->
+    <section class="section-padding text-center" style="background-color: white;">
+        <div class="container">
+            <div class="fade-in">
+                <i class="fas fa-certificate"
+                    style="font-size: 2.5rem; color: var(--color-accent); margin-bottom: 1rem;"></i>
+                <h2 style="font-size: 2rem; color: var(--color-primary); margin-bottom: 1rem;">100% Tự Nhiên</h2>
+                <p style="max-width: 600px; margin: 0 auto; color: var(--color-text-light);">Được trồng và chăm sóc theo
+                    quy trình VietGAP, đảm bảo từng búp trà đều sạch và giữ trọn hương vị nguyên bản.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="section-padding">
+        <div class="container">
+            <h2 class="section-title">Sản Phẩm Thượng Hạng</h2>
+            <p class="subtitle">Tuyển tập những loại trà ngon nhất, được sao tẩm thủ công bởi các nghệ nhân lâu năm.</p>
+
+            <div class="products-grid">
+                <!-- Products will be loaded dynamically via script.js -->
+                <div style="text-align:center; width: 100%; padding: 2rem;">Đang tải sản phẩm...</div>
+            </div>
+
+            <div class="text-center" style="margin-top: 4rem;">
+                <a href="products.html" class="btn btn-accent">Xem Tất Cả Sản Phẩm</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-padding about">
+        <div class="container about-container">
+            <div class="about-content fade-in">
+                <h2>Câu Chuyện Của Chúng Tôi</h2>
+                <p>Sinh ra từ vùng đất danh trà Thái Nguyên, chúng tôi mang trong mình sứ mệnh gìn giữ và lan tỏa văn
+                    hóa trà Việt. Mỗi búp trà không chỉ là thức uống, mà là câu chuyện về nắng, về gió, và về những giọt
+                    mồ hôi của người nông dân.</p>
+                <p>Chúng tôi cam kết mang đến những sản phẩm trà sạch, hương vị thuần khiết nhất, để mỗi chén trà bạn
+                    thưởng thức đều là một khoảnh khắc an yên.</p>
+                <a href="#contact" class="btn btn-accent" style="border: 1px solid white;">Liên Hệ Hợp Tác</a>
+            </div>
+            <div class="about-image fade-in">
+                <img src="images/hero-bg.png" alt="Đồi chè Thái Nguyên">
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section-padding" style="background-color: #f0f0f0;">
+        <div class="container text-center">
+            <h2 style="margin-bottom: 2rem;">Đăng Ký Nhận Tin</h2>
+            <p class="mb-2">Nhận ưu đãi đặc biệt và kiến thức về trà hàng tuần.</p>
+            <form class="newsletter-form" style="max-width: 500px; margin: 0 auto;">
+                <input type="email" placeholder="Địa chỉ email của bạn..." required
+                    style="color: black; border-color: #ccc;">
+                <button type="submit" class="btn btn-primary">Đăng Ký</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="color: white; margin-bottom: 1rem; display: block;">
+                        <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                    </a>
+                    <p>Tinh hoa trà Việt - Hương vị của đất trời.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Liên Hệ</h3>
+                    <p><i class="fas fa-map-marker-alt" style="width: 20px;"></i> Tân Cương, Thái Nguyên</p>
+                    <p><i class="fas fa-phone" style="width: 20px;"></i> 0987 654 321</p>
+                    <p><i class="fas fa-envelope" style="width: 20px;"></i> contact@thainguyentea.vn</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Kết Nối</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved. Designed by Antigravity.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

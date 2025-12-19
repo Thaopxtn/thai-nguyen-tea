@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm - Trà Thái Nguyên</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header id="header" class="scrolled">
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                </a>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="products.html" class="active" style="color:var(--color-primary)">Sản Phẩm</a></li>
+                    <li><a href="index.html#about">Câu Chuyện</a></li>
+                    <li><a href="#contact">Liên Hệ</a></li>
+                </ul>
+                <div class="header-actions" style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="section-padding" style="margin-top: 60px;">
+        <div class="container">
+            <h1 class="section-title">Tất Cả Sản Phẩm</h1>
+            <div class="products-grid" id="all-products">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="color: white; margin-bottom: 1rem; display: block;">
+                        <i class="fas fa-leaf"></i> Thái Nguyên<span>Tea</span>
+                    </a>
+                    <p>Tinh hoa trà Việt - Hương vị của đất trời.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên Hệ</h3>
+                    <p>Tân Cương, Thái Nguyên</p>
+                    <p>0987 654 321</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 Thai Nguyen Tea. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('all-products');
+            const products = loadProducts(); // From script.js
+
+            container.innerHTML = products.map(p => `
+                <div class="product-card fade-in visible">
+                    <div class="product-image">
+                        <a href="detail.html?id=${p.id}">
+                            <img src="${p.image}" alt="${p.name}">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${p.category}</span>
+                        <a href="detail.html?id=${p.id}" style="text-decoration: none; color: inherit;">
+                            <h3 class="product-title">${p.name}</h3>
+                        </a>
+                        <span class="product-price">${Number(p.price).toLocaleString('vi-VN')}₫ / 500g</span>
+                        <button class="btn btn-primary add-to-cart" data-id="${p.id}">Thêm Vào Giỏ</button>
+                    </div>
+                </div>
+            `).join('');
+
+            attachCartListeners(); // From script.js
+        });
+    </script>
+</body>
+
+</html>
