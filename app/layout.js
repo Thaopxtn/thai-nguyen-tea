@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import FlyToCart from "@/components/ui/FlyToCart";
+import SystemStatus from "@/components/ui/SystemStatus";
 
 // seedData removed to prevent build hangs
 // was: seedData();
@@ -25,11 +26,22 @@ export const metadata = {
   description: "Thưởng thức hương vị trà Thái Nguyên thượng hạng. Đậm đà bản sắc Việt.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  let isOffline = false;
+  try {
+    // Lazy check: if dbConnect returns null, we are offline
+    const { default: dbConnect } = await import('@/lib/mongodb');
+    const conn = await dbConnect();
+    if (!conn) isOffline = true;
+  } catch (e) {
+    isOffline = true;
+  }
+
   return (
     <html lang="vi">
       <body className={`${inter.variable} ${playfair.variable}`}>
         <CartProvider>
+          <SystemStatus isOffline={isOffline} />
           <Header />
           {children}
           <FlyToCart />

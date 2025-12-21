@@ -13,7 +13,10 @@ export async function GET() {
 
 export async function POST(request) {
     try {
-        await dbConnect();
+        const conn = await dbConnect();
+        if (!conn) {
+            return NextResponse.json({ error: 'System is in Offline Mode' }, { status: 503 });
+        }
         const data = await request.json();
 
         const newOrder = await Order.create({
