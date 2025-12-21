@@ -5,8 +5,9 @@ import { FaCertificate } from 'react-icons/fa';
 import { getProducts, getNews } from '@/lib/db';
 
 export default async function Home() {
-  const products = getProducts();
+  const products = await getProducts();
   const featuredProducts = products.slice(0, 3);
+  const news = await getNews();
 
   return (
     <main>
@@ -50,7 +51,7 @@ export default async function Home() {
         <div className="container">
           <h2 className="section-title">Tin Tức & Sự Kiện</h2>
           <div className="news-grid">
-            {getNews().slice(0, 3).map(article => (
+            {news.slice(0, 3).map(article => (
               <div key={article.id} className="news-card">
                 <div className="news-image">
                   <img src={article.image} alt={article.title} />

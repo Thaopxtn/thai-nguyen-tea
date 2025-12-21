@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server';
-import { getNews, saveNews } from '@/lib/db';
+import dbConnect from '@/lib/mongodb';
+import News from '@/models/News';
+import { getNews } from '@/lib/db';
 
 export async function GET() {
-    return NextResponse.json(getNews());
+    const news = await getNews();
+    return NextResponse.json(news);
 }
 
 export async function POST(request) {
     try {
-        const article = await request.json();
-        const news = getNews();
+        await dbConnect();
+        const data = await request.json();
 
-        const newArticle = {
-            id: Date.now(),
-            ...article
-        };
-
-        news.unshift(newArticle);
-        saveNews(news);
+        const newArticle = await News.create({
+            id: Date.now().toString(),
+            ...data
+        });
 
         return NextResponse.json({ success: true, article: newArticle });
     } catch (e) {
@@ -26,16 +26,12 @@ export async function POST(request) {
 
 export async function PUT(request) {
     try {
-        const article = await request.json();
-        const news = getNews();
-        const index = news.findIndex(a => a.id == article.id);
+        await dbConnect();
+        const data = await request.json();
 
-        if (index > -1) {
-            news[index] = { ...news[index], ...article };
-            saveNews(news);
-            return NextResponse.json({ success: true });
-        }
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        await News.findOneAndUpdate({ id: data.id }, data);
+
+        return NextResponse.json({ success: true });
     } catch (e) {
         return NextResponse.json({ error: 'Failed' }, { status: 500 });
     }
@@ -43,12 +39,11 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
     try {
+        await dbConnect();
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
 
-        let news = getNews();
-        news = news.filter(a => a.id != id);
-        saveNews(news);
+        await News.deleteOne({ id });
 
         return NextResponse.json({ success: true });
     } catch (e) {

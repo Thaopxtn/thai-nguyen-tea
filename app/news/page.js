@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
-    const articles = getNews();
+    const articles = await getNews();
 
     return (
         <main className="section-padding page-section">

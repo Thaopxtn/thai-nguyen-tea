@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-    const products = getProducts();
+    const products = await getProducts();
 
     return (
         <main className="section-padding page-section">
