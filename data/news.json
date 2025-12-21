@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Lễ Hội Trà Thái Nguyên 2024",
+    "image": "/images/hero-bg.png",
+    "date": "2024-12-20",
+    "excerpt": "Hòa mình vào không khí lễ hội đặc sắc với các hoạt động văn hóa trà truyền thống."
+  },
+  {
+    "id": 2,
+    "title": "Cách Pha Trà Ngon Đúng Điệu",
+    "image": "/images/product-2.png",
+    "date": "2024-12-18",
+    "excerpt": "Hướng dẫn chi tiết từ các nghệ nhân trà để có được ấm trà thơm ngon, chuẩn vị."
+  },
+  {
+    "id": 3,
+    "title": "Tác Dụng Của Trà Xanh Với Sức Khỏe",
+    "image": "/images/product-1.png",
+    "date": "2024-12-15",
+    "excerpt": "Khám phá những lợi ích tuyệt vời của trà xanh đối với sức khỏe và sắc đẹp."
+  }
+]

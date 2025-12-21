@@ -1,0 +1,11 @@
+{
+    "name": "thai-nguyen-tea",
+    "version": "1.0.0",
+    "description": "Thai Nguyen Tea Website",
+    "scripts": {
+        "build": "echo 'No build step required for static site'"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

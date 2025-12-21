@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Trà Tân Cương Đặc Biệt",
+    "price": 450000,
+    "category": "Cao Cấp",
+    "image": "/images/product-1.png",
+    "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu."
+  },
+  {
+    "id": 2,
+    "name": "Trà Móc Câu Hảo Hạng",
+    "price": 320000,
+    "category": "Truyền Thống",
+    "image": "/images/product-2.png",
+    "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn."
+  },
+  {
+    "id": 3,
+    "name": "Trà Nõn Tôm Vương Giả",
+    "price": 850000,
+    "category": "Thượng Hạng",
+    "image": "/images/product-1.png",
+    "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất."
+  },
+  {
+    "id": 4,
+    "name": "Trà Shan Tuyết Cổ Thụ",
+    "price": 550000,
+    "category": "Cao Cấp",
+    "image": "/images/product-2.png",
+    "desc": "Thu hái từ những cây chè cổ thụ trên núi cao, hương vị tinh khiết."
+  },
+  {
+    "id": 5,
+    "name": "Trà Lài Tự Nhiên",
+    "price": 280000,
+    "category": "Hương Hoa",
+    "image": "/images/product-1.png",
+    "desc": "Ướp hương hoa lài tự nhiên, thơm ngát, dễ uống."
+  },
+  {
+    "id": 6,
+    "name": "Trà Sen Tây Hồ",
+    "price": 1200000,
+    "category": "Thượng Hạng",
+    "image": "/images/product-2.png",
+    "desc": "Tinh hoa trà Việt. Ướp trong bông sen bách diệp hồ Tây."
+  }
+]

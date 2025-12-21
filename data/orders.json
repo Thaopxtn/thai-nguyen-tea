@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1766317296627",
+    "createdAt": "2025-12-21T11:41:36.627Z",
+    "customer": "gdfgertg34",
+    "phone": "3423423",
+    "address": "423fef",
+    "note": "fdfgdfgdfg",
+    "items": [
+      {
+        "id": 1,
+        "name": "Trà Tân Cương Đặc Biệt",
+        "price": 450000,
+        "category": "Cao Cấp",
+        "image": "/images/product-1.png",
+        "desc": "Hương vị đậm đà, nước xanh, vị chát dịu hậu ngọt sâu.",
+        "quantity": 5
+      },
+      {
+        "id": 2,
+        "name": "Trà Móc Câu Hảo Hạng",
+        "price": 320000,
+        "category": "Truyền Thống",
+        "image": "/images/product-2.png",
+        "desc": "Cánh trà xoăn nhỏ, hương cốm non nồng nàn.",
+        "quantity": 5
+      },
+      {
+        "id": 3,
+        "name": "Trà Nõn Tôm Vương Giả",
+        "price": 850000,
+        "category": "Thượng Hạng",
+        "image": "/images/product-1.png",
+        "desc": "Tuyệt phẩm trà Việt. Chỉ lấy 1 tôm 1 lá non nhất.",
+        "quantity": 4
+      }
+    ],
+    "total": 7250000,
+    "date": "2025-12-21T11:41:36.452Z",
+    "status": "Chờ xử lý"
+  }
+]
