@@ -7,6 +7,16 @@ const ProductSchema = new mongoose.Schema({
     category: { type: String, required: true },
     image: String,
     desc: String,
+    rating: { type: Number, required: true, default: 0 },
+    numReviews: { type: Number, required: true, default: 0 },
+    reviews: [
+        {
+            user: { type: String, required: true },
+            rating: { type: Number, required: true },
+            comment: { type: String, required: true },
+            date: { type: String, required: true } // Storing as string for simplicity in Mock
+        }
+    ]
 }, { timestamps: true });
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
