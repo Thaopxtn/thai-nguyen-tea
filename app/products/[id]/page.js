@@ -1,5 +1,5 @@
 "use client";
-export const runtime = 'edge';
+
 
 import { use, useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';

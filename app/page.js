@@ -1,6 +1,5 @@
 import Hero from '@/components/home/Hero';
 export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
 import ProductCard from '@/components/product/ProductCard';
 import Link from 'next/link';
 import { FaCertificate } from 'react-icons/fa';
