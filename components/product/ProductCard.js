@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { triggerFly } from '@/components/ui/FlyToCart';
 import { useRef } from 'react';
+import { FaStar } from 'react-icons/fa';
 
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
@@ -27,6 +28,12 @@ export default function ProductCard({ product }) {
                 <Link href={`/products/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <h3 className="product-title">{product.name}</h3>
                 </Link>
+                {product.rating > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginBottom: '8px', color: '#fbbf24' }}>
+                        <FaStar />
+                        <span style={{ color: '#4b5563', fontSize: '0.875rem' }}>{product.rating} ({product.numReviews} đánh giá)</span>
+                    </div>
+                )}
                 <span className="product-price">{Number(product.price).toLocaleString('vi-VN')}₫ / 500g</span>
                 <button
                     className="btn btn-primary add-to-cart"
