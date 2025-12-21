@@ -1,5 +1,6 @@
 import ProductCard from '@/components/product/ProductCard';
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 import { getProducts } from '@/lib/db';
 
 export const metadata = {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const runtime = 'edge';
 import dbConnect from '@/lib/mongodb';
 import News from '@/models/News';
 import { getNews } from '@/lib/db';
