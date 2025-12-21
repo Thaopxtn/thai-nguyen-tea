@@ -3,11 +3,10 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
-import { seedData } from "@/lib/db";
 import FlyToCart from "@/components/ui/FlyToCart";
 
-// Ensure data is seeded
-seedData();
+// seedData removed to prevent build hangs
+// was: seedData();
 
 const inter = Inter({
   subsets: ["latin"],

@@ -1,4 +1,5 @@
 import ProductCard from '@/components/product/ProductCard';
+export const dynamic = 'force-dynamic';
 import { getProducts } from '@/lib/db';
 
 export const metadata = {

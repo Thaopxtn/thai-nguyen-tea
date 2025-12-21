@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { getNews } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Tin Tức - Trà Thái Nguyên',
 };
