@@ -62,7 +62,7 @@ export default async function Home() {
                   <div className="news-date">{article.date}</div>
                   <h3>{article.title}</h3>
                   <p>{article.excerpt}</p>
-                  <Link href="/news" className="read-more">Đọc tiếp</Link>
+                  <Link href={`/news/${article.id}`} className="read-more">Đọc tiếp</Link>
                 </div>
               </div>
             ))}

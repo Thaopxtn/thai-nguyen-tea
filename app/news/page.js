@@ -26,7 +26,9 @@ export default async function NewsPage() {
                                 <div className="news-date">{article.date}</div>
                                 <h3>{article.title}</h3>
                                 <p>{article.excerpt}</p>
-                                <span className="read-more">Đọc tiếp</span>
+                                <Link href={`/news/${article.id}`} className="read-more">
+                                    Đọc tiếp
+                                </Link>
                             </div>
                         </div>
                     ))}
