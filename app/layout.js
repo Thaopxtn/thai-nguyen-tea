@@ -6,8 +6,8 @@ import { CartProvider } from "@/context/CartContext";
 import FlyToCart from "@/components/ui/FlyToCart";
 import SystemStatus from "@/components/ui/SystemStatus";
 
-// Ensure seed data runs to update products with new prices
-seedData();
+// seedData removed
+// seedData();
 
 const inter = Inter({
   subsets: ["latin"],
