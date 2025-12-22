@@ -18,11 +18,11 @@ export default function OrderTracking() {
     const fetchOrders = async (phoneStr) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/orders?phone=${phoneStr}`);
+            const res = await fetch(`/api/orders?phone=${phoneStr}`, { cache: 'no-store' });
             const data = await res.json();
             setOrders(data);
         } catch (e) {
-            alert('Lỗi kết nối');
+            alert('Lỗi kết nối khi tải đơn hàng');
         } finally {
             setLoading(false);
         }
@@ -31,15 +31,12 @@ export default function OrderTracking() {
     const handleSearch = (e) => {
         e.preventDefault();
         fetchOrders(phone);
-        // Save phone for next time
         localStorage.setItem('customerPhone', phone);
     };
 
     const handleCancel = async (orderId) => {
-        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
-
         const reason = prompt('Vui lòng nhập lý do hủy đơn:', '');
-        if (reason === null) return; // User pressed Cancel on prompt
+        if (reason === null) return; // User pressed Cancel
 
         try {
             const res = await fetch(`/api/orders/${orderId}`, {
@@ -47,21 +44,22 @@ export default function OrderTracking() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     status: 'Đã hủy',
-                    cancelReason: reason || 'Không có lý do'
-                })
+                    cancelReason: reason || 'Khách hàng hủy'
+                }),
+                cache: 'no-store'
             });
             const data = await res.json();
 
             if (!res.ok) {
-                alert(data.error || 'Lỗi khi hủy đơn');
+                alert(`Không thể hủy đơn: ${data.error}`);
                 return;
             }
 
             alert('Đã hủy đơn hàng thành công');
-            // Refresh list
-            fetchOrders(phone);
+            // Force reload to ensure fresh data
+            window.location.reload();
         } catch (e) {
-            alert('Lỗi kết nối');
+            alert('Lỗi kết nối: ' + e.message);
         }
     };
 
@@ -103,7 +101,7 @@ export default function OrderTracking() {
                                                     {order.status}
                                                 </span>
                                             </div>
-                                            {order.status === 'Chờ xử lý' && (
+                                            {(order.status === 'Chờ xử lý' || order.status === 'Đang xử lý') && (
                                                 <button
                                                     onClick={() => handleCancel(order.id)}
                                                     style={{
