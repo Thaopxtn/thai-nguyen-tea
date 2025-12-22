@@ -1,4 +1,4 @@
-import { getNewsById } from '@/lib/db';
+import { getNewsById, getRelatedNews } from '@/lib/db';
 import Link from 'next/link';
 
 export const runtime = 'nodejs';
@@ -38,6 +38,8 @@ export default async function NewsDetailPage({ params }) {
         );
     }
 
+    const relatedNews = await getRelatedNews(id);
+
     return (
         <main className="section-padding page-section">
             <div className="container">
@@ -61,6 +63,28 @@ export default async function NewsDetailPage({ params }) {
                         ))}
                     </div>
                 </article>
+
+                {/* Related News Section */}
+                <div className="related-news mt-4">
+                    <h2 className="section-title text-center mb-2">Bài Viết Gợi Ý</h2>
+                    <div className="news-grid">
+                        {relatedNews.map(item => (
+                            <div key={item.id} className="news-card">
+                                <div className="news-image" style={{ height: '180px' }}>
+                                    <Link href={`/news/${item.id}`}>
+                                        <img src={item.image} alt={item.title} />
+                                    </Link>
+                                </div>
+                                <div className="news-content">
+                                    <div className="news-date">{item.date}</div>
+                                    <Link href={`/news/${item.id}`}>
+                                        <h3 style={{ fontSize: '1.1rem' }}>{item.title}</h3>
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </main>
     );
