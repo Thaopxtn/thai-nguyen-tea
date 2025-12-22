@@ -33,13 +33,47 @@ export default async function Home() {
       {/* Products Section */}
       <section id="products" className="section-padding">
         <div className="container">
-          <h2 className="section-title">Sản Phẩm Thượng Hạng</h2>
-          <p className="subtitle">Tuyển tập những loại trà ngon nhất, được sao tẩm thủ công bởi các nghệ nhân lâu năm.</p>
 
-          <div className="products-grid">
-            {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          {/* Section 1: Thượng Hạng */}
+          <div className="product-section mb-16" style={{ marginBottom: '5rem' }}>
+            <h2 className="section-title">Sản Phẩm Thượng Hạng</h2>
+            <p className="subtitle">Tuyển tập những loại trà ngon nhất, được sao tẩm thủ công bởi các nghệ nhân lâu năm.</p>
+            <div className="products-grid">
+              {products
+                .filter(p => p.category === 'Thượng Hạng')
+                .slice(0, 3)
+                .map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+            </div>
+          </div>
+
+          {/* Section 2: Cao Cấp */}
+          <div className="product-section mb-16" style={{ marginBottom: '5rem' }}>
+            <h2 className="section-title">Sản Phẩm Cao Cấp</h2>
+            <p className="subtitle">Hương vị trà đỉnh cao, đậm đà bản sắc, chinh phục những người sành trà khó tính nhất.</p>
+            <div className="products-grid">
+              {products
+                .filter(p => p.category === 'Cao Cấp')
+                .slice(0, 3)
+                .map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+            </div>
+          </div>
+
+          {/* Section 3: Truyền Thống */}
+          <div className="product-section">
+            <h2 className="section-title">Sản Phẩm Truyền Thống</h2>
+            <p className="subtitle">Giữ trọn hương vị trà xưa, mộc mạc và gần gũi, mang đậm hồn quê Việt Nam.</p>
+            <div className="products-grid">
+              {products
+                .filter(p => ['Truyền Thống', 'Hương Hoa', 'Thảo Mộc'].includes(p.category))
+                .slice(0, 3)
+                .map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+            </div>
           </div>
 
           <div className="text-center" style={{ marginTop: '4rem' }}>
