@@ -34,17 +34,29 @@ export default function OrderTracking() {
         localStorage.setItem('customerPhone', phone);
     };
 
-    const handleCancel = async (orderId) => {
-        const reason = prompt('Vui lòng nhập lý do hủy đơn:', '');
-        if (reason === null) return; // User pressed Cancel
+    const [showModal, setShowModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [cancelReason, setCancelReason] = useState('');
+
+    const openCancelModal = (orderId) => {
+        setSelectedOrder(orderId);
+        setCancelReason('');
+        setShowModal(true);
+    };
+
+    const confirmCancel = async () => {
+        if (!cancelReason.trim()) {
+            alert('Vui lòng nhập lý do hủy đơn');
+            return;
+        }
 
         try {
-            const res = await fetch(`/api/orders/${orderId}`, {
+            const res = await fetch(`/api/orders/${selectedOrder}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     status: 'Đã hủy',
-                    cancelReason: reason || 'Khách hàng hủy'
+                    cancelReason: cancelReason
                 }),
                 cache: 'no-store'
             });
@@ -56,8 +68,8 @@ export default function OrderTracking() {
             }
 
             alert('Đã hủy đơn hàng thành công');
-            // Force reload to ensure fresh data
-            window.location.reload();
+            setShowModal(false);
+            fetchOrders(phone); // Refresh without reload
         } catch (e) {
             alert('Lỗi kết nối: ' + e.message);
         }
@@ -103,7 +115,7 @@ export default function OrderTracking() {
                                             </div>
                                             {(order.status === 'Chờ xử lý' || order.status === 'Đang xử lý') && (
                                                 <button
-                                                    onClick={() => handleCancel(order.id)}
+                                                    onClick={() => openCancelModal(order.id)}
                                                     style={{
                                                         background: '#ff4d4d', color: 'white', border: 'none',
                                                         padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem'
@@ -130,6 +142,30 @@ export default function OrderTracking() {
                     </div>
                 )}
             </div>
+
+            {/* Modal Custom */}
+            {showModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000
+                }}>
+                    <div style={{ background: 'white', padding: '2rem', borderRadius: 8, width: '90%', maxWidth: '400px' }}>
+                        <h3 style={{ marginBottom: '1rem' }}>Xác nhận hủy đơn</h3>
+                        <p style={{ marginBottom: '1rem' }}>Vui lòng nhập lý do hủy đơn hàng:</p>
+                        <textarea
+                            value={cancelReason}
+                            onChange={(e) => setCancelReason(e.target.value)}
+                            style={{ width: '100%', padding: '0.5rem', border: '1px solid #ddd', borderRadius: 4, minHeight: '80px', marginBottom: '1rem' }}
+                            placeholder="Ví dụ: Đổi ý, đặt nhầm số lượng..."
+                            autoFocus
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                            <button onClick={() => setShowModal(false)} className="btn" style={{ background: '#ecf0f1', color: '#333' }}>Đóng</button>
+                            <button onClick={confirmCancel} className="btn" style={{ background: '#e74c3c', color: 'white' }}>Xác nhận Hủy</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
