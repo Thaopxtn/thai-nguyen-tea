@@ -877,42 +877,5 @@ footer {
 }
 
 
-/* Related News Slider */
-.related-slider-container {
-  width: 100%;
-  overflow: hidden;
-  padding: 1rem 0;
-}
 
-.related-slider {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 1.5rem;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-accent) #f0f0f0;
-}
-
-.related-slider::-webkit-scrollbar {
-  height: 8px;
-}
-
-.related-slider::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 4px;
-}
-
-.related-slider::-webkit-scrollbar-thumb {
-  background-color: var(--color-accent);
-  border-radius: 4px;
-}
-
-.slider-card {
-  min-width: 280px;
-  max-width: 280px;
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
 
