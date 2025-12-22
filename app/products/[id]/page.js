@@ -57,15 +57,38 @@ export default function ProductDetailPage({ params }) {
         <main className="section-padding page-section">
             <div className="container">
                 <div className="about-container" style={{ alignItems: 'start' }}>
-                    <div className="product-image" id="detail-img" style={{ height: 'auto', borderRadius: 8, overflow: 'hidden' }}>
+                    <div className="product-image" id="detail-img" style={{ height: 'auto', borderRadius: 8, overflow: 'hidden', position: 'relative' }}>
+                        {product.originalPrice && product.originalPrice > product.price && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '20px',
+                                right: '20px',
+                                background: '#e74c3c',
+                                color: 'white',
+                                padding: '8px 16px',
+                                borderRadius: '4px',
+                                fontWeight: 'bold',
+                                fontSize: '1.2rem',
+                                zIndex: 2
+                            }}>
+                                -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                            </div>
+                        )}
                         <img src={product.image} alt={product.name} />
                     </div>
                     <div className="product-info" style={{ textAlign: 'left' }}>
                         <span className="product-category">{product.category}</span>
                         <h1 className="product-title" style={{ fontSize: '2.5rem' }}>{product.name}</h1>
-                        <span className="product-price" style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
-                            {Number(product.price).toLocaleString('vi-VN')}₫
-                        </span>
+                        <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+                            <span className="product-price" style={{ fontSize: '1.5rem', marginBottom: 0 }}>
+                                {Number(product.price).toLocaleString('vi-VN')}₫
+                            </span>
+                            {product.originalPrice && product.originalPrice > product.price && (
+                                <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1.2rem' }}>
+                                    {Number(product.originalPrice).toLocaleString('vi-VN')}₫
+                                </span>
+                            )}
+                        </div>
                         <p style={{ marginBottom: '2rem', color: '#666' }}>{product.desc}</p>
 
                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
