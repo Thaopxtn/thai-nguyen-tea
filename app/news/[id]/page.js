@@ -18,8 +18,24 @@ export async function generateMetadata({ params }) {
     return {
         title: `${article.title} - Trà Thái Nguyên`,
         description: article.excerpt,
+        openGraph: {
+            title: article.title,
+            description: article.excerpt,
+            images: [
+                {
+                    url: article.image,
+                    width: 800,
+                    height: 600,
+                    alt: article.title,
+                }
+            ],
+            type: 'article',
+            publishedTime: article.date,
+        },
     };
 }
+
+import Image from 'next/image';
 
 export default async function NewsDetailPage({ params }) {
     const { id } = await params;
@@ -53,8 +69,15 @@ export default async function NewsDetailPage({ params }) {
                         </div>
                     </div>
 
-                    <div className="news-detail-image">
-                        <img src={article.image} alt={article.title} />
+                    <div className="news-detail-image" style={{ position: 'relative', width: '100%', height: '400px', marginBottom: '2rem', borderRadius: '8px', overflow: 'hidden' }}>
+                        <Image
+                            src={article.image}
+                            alt={article.title}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            priority
+                            sizes="(max-width: 768px) 100vw, 800px"
+                        />
                     </div>
 
                     <div className="news-detail-content">

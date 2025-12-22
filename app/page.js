@@ -12,8 +12,24 @@ export default async function Home() {
   const featuredProducts = products.slice(0, 3);
   const news = await getNews();
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Trà Thái Nguyên',
+    url: 'https://thai-nguyen-tea.vercel.app',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://thai-nguyen-tea.vercel.app/products?q={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    }
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Hero />
 
       {/* Features / Intro */}

@@ -1,128 +1,90 @@
-"use client";
+import { getProductById, getProducts } from '@/lib/db';
+import ProductDetailClient from './ProductDetailClient';
 
-
-import { use, useState, useEffect } from 'react';
-import { useCart } from '@/context/CartContext';
-import Link from 'next/link';
-
-// Since this is a Client Component (for hook usage), we should fetch data or receive it. 
-// However, to keep it simple without passing props from server component wrapper, 
-// we will fetch from API we just created.
-// Alternatively, we could make the main Page a Server Component and a separate Client Component for the logic.
-// Let's do the Fetch approach for dynamic client updates. 
-
-export default function ProductDetailPage({ params }) {
-    const resolvedParams = use(params);
-    const { id } = resolvedParams;
-
-    const [product, setProduct] = useState(null);
-    const [related, setRelated] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [qty, setQty] = useState(1);
-    const { addToCart } = useCart();
-
-    useEffect(() => {
-        fetch('/api/products')
-            .then(res => res.json())
-            .then(data => {
-                const p = data.find(item => item.id == id);
-                setProduct(p);
-                if (p) {
-                    setRelated(data.filter(item => item.category === p.category && item.id != p.id).slice(0, 3));
-                }
-                setLoading(false);
-            })
-            .catch(err => setLoading(false));
-    }, [id]);
-
-    if (loading) return <div className="section-padding page-section text-center">Loading...</div>;
+// Server Component for fetching data and metadata
+export async function generateMetadata({ params }) {
+    const { id } = await params;
+    const product = await getProductById(id);
 
     if (!product) {
-        return (
-            <div className="section-padding page-section text-center">
-                <h2>Không tìm thấy sản phẩm</h2>
-                <Link href="/products" className="btn btn-primary mt-2">Quay lại cửa hàng</Link>
-            </div>
-        );
+        return {
+            title: 'Sản phẩm không tồn tại',
+            description: 'Không tìm thấy thông tin sản phẩm.',
+        };
     }
 
-    const handleAddToCart = () => {
-        addToCart(product, qty);
-        // Dispatch event for FlyCart if we implement it, handled by Context or component interaction
-        // For now standard behavior
-        alert(`Đã thêm ${qty} ${product.name} vào giỏ hàng!`);
+    return {
+        title: `${product.name} - Trà Thái Nguyên`,
+        description: product.desc || `Mua ${product.name} chất lượng cao, giá tốt tại Trà Thái Nguyên.`,
+        openGraph: {
+            title: product.name,
+            description: product.desc,
+            images: [
+                {
+                    url: product.image,
+                    width: 800,
+                    height: 800,
+                    alt: product.name,
+                },
+            ],
+            type: 'product',
+            price: {
+                amount: product.price,
+                currency: 'VND',
+            }
+        },
     };
+}
+
+export default async function ProductDetailPage({ params }) {
+    const { id } = await params;
+
+    // Fetch Data
+    const product = await getProductById(id);
+
+    // Fetch related products (simple logic: same category)
+    let related = [];
+    if (product) {
+        // We could optimize this by creating getRelatedProducts in db.js
+        // For now, fetching all and filtering is acceptable for small catalog, 
+        // using the same logic as before but server-side.
+        const allProducts = await getProducts();
+        related = allProducts
+            .filter(item => item.category === product.category && item.id != product.id)
+            .slice(0, 3);
+    }
+
+    // Create JSON-LD
+    const jsonLd = product ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        image: product.image,
+        description: product.desc,
+        sku: product.id,
+        brand: {
+            '@type': 'Brand',
+            name: 'Trà Thái Nguyên'
+        },
+        offers: {
+            '@type': 'Offer',
+            url: `https://thai-nguyen-tea.vercel.app/products/${product.id}`,
+            priceCurrency: 'VND',
+            price: product.price,
+            availability: 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/NewCondition'
+        }
+    } : null;
 
     return (
-        <main className="section-padding page-section">
-            <div className="container">
-                <div className="about-container" style={{ alignItems: 'start' }}>
-                    <div className="product-image" id="detail-img" style={{ height: 'auto', borderRadius: 8, overflow: 'hidden', position: 'relative' }}>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '20px',
-                                right: '20px',
-                                background: '#e74c3c',
-                                color: 'white',
-                                padding: '8px 16px',
-                                borderRadius: '4px',
-                                fontWeight: 'bold',
-                                fontSize: '1.2rem',
-                                zIndex: 2
-                            }}>
-                                -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                            </div>
-                        )}
-                        <img src={product.image} alt={product.name} />
-                    </div>
-                    <div className="product-info" style={{ textAlign: 'left' }}>
-                        <span className="product-category">{product.category}</span>
-                        <h1 className="product-title" style={{ fontSize: '2.5rem' }}>{product.name}</h1>
-                        <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-                            <span className="product-price" style={{ fontSize: '1.5rem', marginBottom: 0 }}>
-                                {Number(product.price).toLocaleString('vi-VN')}₫
-                            </span>
-                            {product.originalPrice && product.originalPrice > product.price && (
-                                <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1.2rem' }}>
-                                    {Number(product.originalPrice).toLocaleString('vi-VN')}₫
-                                </span>
-                            )}
-                        </div>
-                        <p style={{ marginBottom: '2rem', color: '#666' }}>{product.desc}</p>
-
-                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
-                            <div className="qty-controls">
-                                <button className="qty-btn" onClick={() => setQty(q => Math.max(1, q - 1))}>-</button>
-                                <input type="text" className="qty-input" value={qty} readOnly />
-                                <button className="qty-btn" onClick={() => setQty(q => q + 1)}>+</button>
-                            </div>
-                            <button className="btn btn-primary" onClick={handleAddToCart}>Thêm Vào Giỏ</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-4">
-                    <h3>Sản Phẩm Liên Quan</h3>
-                    <div className="products-grid mt-2">
-                        {related.map(p => (
-                            <div key={p.id} className="product-card">
-                                <div className="product-image">
-                                    <Link href={`/products/${p.id}`}>
-                                        <img src={p.image} alt={p.name} />
-                                    </Link>
-                                </div>
-                                <div className="product-info">
-                                    <Link href={`/products/${p.id}`}>
-                                        <h3 className="product-title">{p.name}</h3>
-                                    </Link>
-                                    <span className="product-price">{Number(p.price).toLocaleString('vi-VN')}₫</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </main>
+        <>
+            {jsonLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
+            )}
+            <ProductDetailClient product={product} related={related} />
+        </>
     );
 }
