@@ -17,9 +17,15 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         const savedPhone = localStorage.getItem('customerPhone');
-        if (savedPhone) {
-            setFormData(prev => ({ ...prev, phone: savedPhone }));
-        }
+        const savedName = localStorage.getItem('customerName');
+        const savedAddress = localStorage.getItem('customerAddress');
+
+        setFormData(prev => ({
+            ...prev,
+            phone: savedPhone || '',
+            name: savedName || '',
+            address: savedAddress || ''
+        }));
     }, []);
 
     if (cart.length === 0) {
@@ -55,6 +61,8 @@ export default function CheckoutPage() {
             if (res.ok) {
                 // Save phone for tracking
                 localStorage.setItem('customerPhone', formData.phone);
+                localStorage.setItem('customerName', formData.name);
+                localStorage.setItem('customerAddress', formData.address);
 
                 alert('Đặt hàng thành công! Chúng tôi sẽ liên hệ sớm.');
                 clearCart();

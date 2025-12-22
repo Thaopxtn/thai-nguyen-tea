@@ -44,6 +44,38 @@ export async function POST(request) {
             ...data
         });
 
+        // --- Sync with Customer Database ---
+        try {
+            const Customer = (await import('@/models/Customer')).default;
+
+            // Try to find existing customer by phone
+            let customer = await Customer.findOne({ phone: data.phone });
+
+            if (customer) {
+                // Update existing
+                customer.name = data.customer; // Update name if changed
+                customer.address = data.address; // Update address to latest
+                customer.totalOrders += 1;
+                customer.totalSpent += (data.total || 0);
+                customer.lastOrderDate = new Date();
+                await customer.save();
+            } else {
+                // Create new
+                await Customer.create({
+                    id: Date.now().toString() + "_c", // distinct ID
+                    phone: data.phone,
+                    name: data.customer,
+                    address: data.address,
+                    totalOrders: 1,
+                    totalSpent: data.total || 0,
+                    lastOrderDate: new Date()
+                });
+            }
+        } catch (err) {
+            console.error("Error syncing customer:", err);
+            // Don't block order creation
+        }
+
         return NextResponse.json({ success: true, order: newOrder });
     } catch (e) {
         console.error(e);

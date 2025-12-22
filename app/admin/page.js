@@ -72,6 +72,7 @@ export default function AdminDashboard() {
                     <Link href="/admin/products" className="btn btn-primary">Quản Lý Sản Phẩm</Link>
                     <Link href="/admin/news" className="btn btn-primary">Quản Lý Tin Tức</Link>
                     <Link href="/admin/orders" className="btn btn-primary">Quản Lý Đơn Hàng</Link>
+                    <Link href="/admin/customers" className="btn btn-primary">Quản Lý Khách Hàng</Link>
                     <button className="btn btn-accent" onClick={() => {
                         document.cookie = 'admin_auth=; Max-Age=0; path=/;';
                         window.location.href = '/admin/login';
