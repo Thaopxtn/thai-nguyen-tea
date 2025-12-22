@@ -18,7 +18,23 @@ export default function ProductCard({ product }) {
 
     return (
         <div className="product-card fade-in visible">
-            <div className="product-image">
+            <div className="product-image" style={{ position: 'relative' }}>
+                {product.originalPrice && product.originalPrice > product.price && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: '#e74c3c',
+                        color: 'white',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem',
+                        zIndex: 2
+                    }}>
+                        -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                    </div>
+                )}
                 <Link href={`/products/${product.id}`}>
                     <img ref={imgRef} src={product.image} alt={product.name} />
                 </Link>
@@ -34,7 +50,14 @@ export default function ProductCard({ product }) {
                         <span style={{ color: '#4b5563', fontSize: '0.875rem' }}>{product.rating} ({product.numReviews} đánh giá)</span>
                     </div>
                 )}
-                <span className="product-price">{Number(product.price).toLocaleString('vi-VN')}₫ / 500g</span>
+                <div className="product-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{Number(product.price).toLocaleString('vi-VN')}₫ <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>/ 500g</span></span>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                        <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9rem' }}>
+                            {Number(product.originalPrice).toLocaleString('vi-VN')}₫
+                        </span>
+                    )}
+                </div>
                 <button
                     className="btn btn-primary add-to-cart"
                     onClick={handleAddToCart}
