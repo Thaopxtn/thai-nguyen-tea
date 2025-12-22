@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FaLeaf, FaShoppingBag } from 'react-icons/fa';
+import { usePathname, useRouter } from 'next/navigation';
+import { FaLeaf, FaShoppingBag, FaSearch } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
 import clsx from 'clsx';
 
@@ -12,6 +12,11 @@ export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { totalItems } = useCart();
     const pathname = usePathname();
+
+    // Search state
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -25,6 +30,15 @@ export default function Header() {
     useEffect(() => {
         setMobileMenuOpen(false);
     }, [pathname]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            router.push(`/products?search=${encodeURIComponent(query)}`);
+            setSearchOpen(false);
+            setQuery('');
+        }
+    };
 
     return (
         <header id="header" className={clsx({ 'scrolled': scrolled })}>
@@ -42,6 +56,27 @@ export default function Header() {
                     </ul>
 
                     <div className="header-actions">
+                        <div className="search-container">
+                            <button
+                                className="search-icon-btn"
+                                onClick={() => setSearchOpen(!searchOpen)}
+                                aria-label="Tìm kiếm"
+                            >
+                                <FaSearch />
+                            </button>
+                            <div className={clsx("search-input-wrapper", { active: searchOpen })}>
+                                <form onSubmit={handleSearch} style={{ width: '100%' }}>
+                                    <input
+                                        type="text"
+                                        className="search-input"
+                                        placeholder="Tìm kiếm sản phẩm..."
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                    />
+                                </form>
+                            </div>
+                        </div>
+
                         <Link href="/cart" className="cart-icon" id="cart-target">
                             <FaShoppingBag />
                             <span className="cart-count">{totalItems}</span>

@@ -1,4 +1,5 @@
 import Hero from '@/components/home/Hero';
+import Image from 'next/image';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 import ProductCard from '@/components/product/ProductCard';
@@ -16,7 +17,7 @@ export default async function Home() {
       <Hero />
 
       {/* Features / Intro */}
-      <section className="section-padding text-center" style={{ backgroundColor: 'white' }}>
+      <section className="section-padding text-center bg-white">
         <div className="container">
           <div className="fade-in visible">
             <div style={{ fontSize: '2.5rem', color: 'var(--color-accent)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
@@ -89,8 +90,14 @@ export default async function Home() {
           <div className="news-grid">
             {news.slice(0, 3).map(article => (
               <div key={article.id} className="news-card">
-                <div className="news-image">
-                  <img src={article.image} alt={article.title} />
+                <div className="news-image" style={{ position: 'relative' }}>
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    style={{ objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="news-content">
                   <div className="news-date">{article.date}</div>
@@ -119,8 +126,13 @@ export default async function Home() {
               thưởng thức đều là một khoảnh khắc an yên.</p>
             <Link href="/#contact" className="btn btn-accent" style={{ border: '1px solid white' }}>Liên Hệ Hợp Tác</Link>
           </div>
-          <div className="about-image fade-in visible">
-            <img src="/images/hero-bg.png" alt="Đồi chè Thái Nguyên" />
+          <div className="about-image fade-in visible" style={{ position: 'relative', height: '400px', width: '100%' }}>
+            <Image
+              src="/images/hero-bg.png"
+              alt="Đồi chè Thái Nguyên"
+              fill
+              style={{ objectFit: 'cover' }}
+            />
           </div>
         </div>
       </section>
