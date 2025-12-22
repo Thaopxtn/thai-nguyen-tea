@@ -28,10 +28,6 @@ export async function generateMetadata({ params }) {
                 },
             ],
             type: 'product',
-            price: {
-                amount: product.price,
-                currency: 'VND',
-            }
         },
     };
 }
