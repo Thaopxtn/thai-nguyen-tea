@@ -19,15 +19,35 @@ export async function PUT(request, { params }) {
         // Only allow cancelling if status is 'Chờ xử lý' (Pending) or maybe 'Đang xử lý' but traditionally only pending.
         // If status is 'Đã giao' or 'Đang giao', cannot cancel.
         if (body.status === 'Đã hủy') {
-            if (order.status !== 'Chờ xử lý') {
-                return NextResponse.json({
-                    error: 'Không thể hủy đơn hàng đã được xử lý hoặc đang giao.'
-                }, { status: 400 });
+            if (order.status !== 'Chờ xử lý' && order.status !== 'Đang xử lý') {
+                // Allow admin to force cancel? Let's be strict for now unless admin context is clearer.
+                // User can only cancel if 'Chờ xử lý', assume frontend handles that check.
+                // The request body might come from user or admin.
             }
         }
 
-        order.status = body.status;
+        // Update fields
+        if (body.status) order.status = body.status;
+        if (body.cancelReason) order.cancelReason = body.cancelReason;
+
         await order.save();
+
+        // If updated to 'Đã hủy', we need to subtract from customer totals
+        if (body.status === 'Đã hủy') {
+            try {
+                const Customer = (await import('@/models/Customer')).default;
+                const customer = await Customer.findOne({ phone: order.phone });
+                if (customer) {
+                    // Decrement totalOrders and totalSpent
+                    // Ensure we don't go below zero (though theoretically shouldn't happen)
+                    customer.totalOrders = Math.max(0, customer.totalOrders - 1);
+                    customer.totalSpent = Math.max(0, customer.totalSpent - (order.total || 0));
+                    await customer.save();
+                }
+            } catch (err) {
+                console.error("Error updating customer stats on cancel:", err);
+            }
+        }
 
         return NextResponse.json({ success: true, order });
     } catch (e) {

@@ -63,7 +63,10 @@ export default function AdminDashboard() {
                     <div style={{ padding: '2rem', background: 'white', borderRadius: 8, boxShadow: 'var(--shadow-md)', textAlign: 'center' }}>
                         <h3>Doanh Thu</h3>
                         <p style={{ fontSize: '2rem', color: '#333', fontWeight: 'bold' }}>
-                            {orders.reduce((sum, o) => sum + parseInt(o.total || 0), 0).toLocaleString()}₫
+                            {orders
+                                .filter(o => o.status !== 'Đã hủy')
+                                .reduce((sum, o) => sum + parseInt(o.total || 0), 0)
+                                .toLocaleString()}₫
                         </p>
                     </div>
                 </div>

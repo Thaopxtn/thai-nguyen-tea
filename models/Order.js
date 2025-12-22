@@ -8,6 +8,7 @@ const OrderSchema = new mongoose.Schema({
     note: String,
     total: Number,
     status: { type: String, default: 'Chờ xử lý' },
+    cancelReason: String,
     items: Array, // Ideally sub-schema, but Array is fine for simple migration
     createdAt: { type: Date, default: Date.now }, // Explicitly track creation for sorting
 }, { timestamps: true });

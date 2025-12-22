@@ -38,11 +38,17 @@ export default function OrderTracking() {
     const handleCancel = async (orderId) => {
         if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
 
+        const reason = prompt('Vui lòng nhập lý do hủy đơn:', '');
+        if (reason === null) return; // User pressed Cancel on prompt
+
         try {
             const res = await fetch(`/api/orders/${orderId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'Đã hủy' })
+                body: JSON.stringify({
+                    status: 'Đã hủy',
+                    cancelReason: reason || 'Không có lý do'
+                })
             });
             const data = await res.json();
 
