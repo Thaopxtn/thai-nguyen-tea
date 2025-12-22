@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +14,13 @@ export default function CheckoutPage() {
         note: ''
     });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const savedPhone = localStorage.getItem('customerPhone');
+        if (savedPhone) {
+            setFormData(prev => ({ ...prev, phone: savedPhone }));
+        }
+    }, []);
 
     if (cart.length === 0) {
         return (
@@ -46,9 +53,12 @@ export default function CheckoutPage() {
             });
 
             if (res.ok) {
+                // Save phone for tracking
+                localStorage.setItem('customerPhone', formData.phone);
+
                 alert('Đặt hàng thành công! Chúng tôi sẽ liên hệ sớm.');
                 clearCart();
-                router.push('/');
+                router.push('/tracking'); // Redirect to tracking page instead of home
             } else {
                 alert('Có lỗi xảy ra, vui lòng thử lại.');
             }

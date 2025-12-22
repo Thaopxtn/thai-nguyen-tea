@@ -1,25 +1,61 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function OrderTracking() {
     const [phone, setPhone] = useState('');
     const [orders, setOrders] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        const savedPhone = localStorage.getItem('customerPhone');
+        if (savedPhone) {
+            setPhone(savedPhone);
+            fetchOrders(savedPhone);
+        }
+    }, []);
+
+    const fetchOrders = async (phoneStr) => {
         setLoading(true);
         try {
-            const res = await fetch('/api/orders');
-            const allOrders = await res.json();
-            // Client-side filtering for simplicity. Ideally API should support filtering.
-            const myOrders = allOrders.filter(o => o.phone.includes(phone));
-            setOrders(myOrders);
+            const res = await fetch(`/api/orders?phone=${phoneStr}`);
+            const data = await res.json();
+            setOrders(data);
         } catch (e) {
             alert('Lỗi kết nối');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchOrders(phone);
+        // Save phone for next time
+        localStorage.setItem('customerPhone', phone);
+    };
+
+    const handleCancel = async (orderId) => {
+        if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
+
+        try {
+            const res = await fetch(`/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'Đã hủy' })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.error || 'Lỗi khi hủy đơn');
+                return;
+            }
+
+            alert('Đã hủy đơn hàng thành công');
+            // Refresh list
+            fetchOrders(phone);
+        } catch (e) {
+            alert('Lỗi kết nối');
         }
     };
 
@@ -50,11 +86,30 @@ export default function OrderTracking() {
                             <div>
                                 {orders.map(order => (
                                     <div key={order.id} style={{ background: 'white', padding: '1.5rem', borderRadius: 8, boxShadow: 'var(--shadow-sm)', marginBottom: '1.5rem' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>
-                                            <strong>#{order.id}</strong>
-                                            <span style={{ color: order.status === 'Chờ xử lý' ? '#e67e22' : '#27ae60', fontWeight: 'bold' }}>{order.status}</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem', alignItems: 'center' }}>
+                                            <div>
+                                                <strong>#{order.id}</strong>
+                                                <span className="ml-1" style={{
+                                                    color: order.status === 'Chờ xử lý' ? '#e67e22' :
+                                                        order.status === 'Đã hủy' ? '#e74c3c' : '#27ae60',
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {order.status}
+                                                </span>
+                                            </div>
+                                            {order.status === 'Chờ xử lý' && (
+                                                <button
+                                                    onClick={() => handleCancel(order.id)}
+                                                    style={{
+                                                        background: '#ff4d4d', color: 'white', border: 'none',
+                                                        padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem'
+                                                    }}
+                                                >
+                                                    Hủy Đơn
+                                                </button>
+                                            )}
                                         </div>
-                                        <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                                        <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}</p>
                                         <p><strong>Tổng tiền:</strong> {Number(order.total).toLocaleString('vi-VN')}₫</p>
                                         <div style={{ marginTop: '1rem' }}>
                                             {order.items.map((item, idx) => (
