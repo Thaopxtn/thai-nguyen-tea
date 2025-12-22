@@ -6,23 +6,32 @@ export async function PUT(request, { params }) {
     try {
         const { id } = await params;
         const body = await request.json();
+        console.log(`Updating order ${id}:`, body);
 
         await dbConnect();
 
         // Find order
         const order = await Order.findOne({ id: id });
         if (!order) {
+            console.error(`Order ${id} not found`);
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
         }
 
         // Check if we can cancel
-        // Only allow cancelling if status is 'Chờ xử lý' (Pending) or maybe 'Đang xử lý' but traditionally only pending.
-        // If status is 'Đã giao' or 'Đang giao', cannot cancel.
+        // If it's a cancellation request
         if (body.status === 'Đã hủy') {
-            if (order.status !== 'Chờ xử lý' && order.status !== 'Đang xử lý') {
-                // Allow admin to force cancel? Let's be strict for now unless admin context is clearer.
-                // User can only cancel if 'Chờ xử lý', assume frontend handles that check.
-                // The request body might come from user or admin.
+            // Check if status allows cancelling. 
+            // NOTE: If this request comes from ADMIN, we should probably allow it regardless.
+            // But we don't have auth context here easily without checking cookie again (which is fine).
+            // Let's check cookie.
+            const adminAuth = request.cookies.get('admin_auth');
+            const isAdmin = adminAuth?.value === 'true';
+
+            if (!isAdmin && order.status !== 'Chờ xử lý' && order.status !== 'Đang xử lý') {
+                // User can only cancel if pending. 
+                return NextResponse.json({
+                    error: 'Bạn chỉ có thể hủy đơn hàng khi đang chờ xử lý.'
+                }, { status: 400 });
             }
         }
 
