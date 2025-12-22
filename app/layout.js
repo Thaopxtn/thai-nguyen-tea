@@ -26,6 +26,8 @@ export const metadata = {
   description: "Thưởng thức hương vị trà Thái Nguyên thượng hạng. Đậm đà bản sắc Việt.",
 };
 
+import AnalyticsTracker from "@/components/AnalyticsTracker";
+
 export default async function RootLayout({ children }) {
   let isOffline = false;
   try {
@@ -41,6 +43,7 @@ export default async function RootLayout({ children }) {
     <html lang="vi">
       <body className={`${inter.variable} ${playfair.variable}`}>
         <CartProvider>
+          <AnalyticsTracker />
           <SystemStatus isOffline={isOffline} />
           <Header />
           {children}
