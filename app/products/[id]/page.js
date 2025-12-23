@@ -14,20 +14,23 @@ export async function generateMetadata({ params }) {
             };
         }
 
+        const images = [];
+        if (product.image) {
+            images.push({
+                url: product.image,
+                width: 800,
+                height: 800,
+                alt: product.name || 'Chi tiết sản phẩm',
+            });
+        }
+
         return {
             title: `${product.name} - Trà Thái Nguyên`,
             description: product.desc || `Mua ${product.name} chất lượng cao, giá tốt tại Trà Thái Nguyên.`,
             openGraph: {
                 title: product.name,
-                description: product.desc,
-                images: [
-                    {
-                        url: product.image,
-                        width: 800,
-                        height: 800,
-                        alt: product.name,
-                    },
-                ],
+                description: product.desc || 'Sản phẩm trà Thái Nguyên thượng hạng',
+                images: images,
                 type: 'product',
             },
         };
@@ -44,21 +47,20 @@ export default async function ProductDetailPage({ params }) {
     try {
         const { id } = await params;
 
-        // Fetch Data
-        console.log(`Fetching product with ID: ${id}`);
+        // Log for server-side debugging
+        console.log(`[ProductPage] Fetching product with ID: ${id}`);
         const product = await getProductById(id);
 
         if (!product) {
-            console.warn(`Product not found for ID: ${id}`);
+            console.warn(`[ProductPage] Product not found for ID: ${id}`);
+        } else {
+            console.log(`[ProductPage] Found product: ${product.name}`);
         }
 
         // Fetch related products (simple logic: same category)
         let related = [];
         if (product) {
             try {
-                // We could optimize this by creating getRelatedProducts in db.js
-                // For now, fetching all and filtering is acceptable for small catalog, 
-                // using the same logic as before but server-side.
                 const allProducts = await getProducts();
                 if (Array.isArray(allProducts)) {
                     related = allProducts
@@ -66,17 +68,17 @@ export default async function ProductDetailPage({ params }) {
                         .slice(0, 3);
                 }
             } catch (err) {
-                console.error("Error fetching related products:", err);
+                console.error("[ProductPage] Error fetching related products:", err);
             }
         }
 
-        // Create JSON-LD
+        // Create JSON-LD safely
         const jsonLd = product ? {
             '@context': 'https://schema.org',
             '@type': 'Product',
-            name: product.name,
-            image: product.image,
-            description: product.desc,
+            name: product.name || 'Sản phẩm',
+            image: product.image || '',
+            description: product.desc || '',
             sku: product.id,
             brand: {
                 '@type': 'Brand',
@@ -86,7 +88,7 @@ export default async function ProductDetailPage({ params }) {
                 '@type': 'Offer',
                 url: `https://thai-nguyen-tea.vercel.app/products/${product.id}`,
                 priceCurrency: 'VND',
-                price: product.price,
+                price: product.price || 0,
                 availability: 'https://schema.org/InStock',
                 itemCondition: 'https://schema.org/NewCondition'
             }
