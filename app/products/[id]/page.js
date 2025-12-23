@@ -102,7 +102,16 @@ export default async function ProductDetailPage({ params }) {
                         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
                     />
                 )}
-                <ProductDetailClient product={product} related={related} />
+                {/* <ProductDetailClient product={product} related={related} /> */}
+                <div style={{ padding: '2rem', color: 'white', background: '#333' }}>
+                    <h1>Server Component Isolation Mode</h1>
+                    <p>Status: <strong>Server Rendering Works</strong></p>
+                    <hr />
+                    <h3>Product Data (Raw):</h3>
+                    <pre style={{ overflow: 'auto', maxHeight: '500px' }}>
+                        {JSON.stringify(product, null, 2)}
+                    </pre>
+                </div>
             </>
         );
     } catch (error) {
