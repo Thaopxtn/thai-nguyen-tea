@@ -1,22 +1,25 @@
 "use client";
 
 import Script from 'next/script';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ImageUpload = ({ onUpload, multiple = false }) => {
     const cloudinaryRef = useRef();
     const widgetRef = useRef();
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        // Just checking if script loaded is not enough, as window.cloudinary might be set later
-        // We use the onLoad callback of Script component instead
+        // Check if script is already loaded (e.g. from another component or navigation)
+        if (window.cloudinary && !widgetRef.current) {
+            initWidget();
+        }
     }, []);
 
-    const handleOnLoad = () => {
-        if (window.cloudinary) {
+    const initWidget = () => {
+        if (window.cloudinary && !widgetRef.current) {
             cloudinaryRef.current = window.cloudinary;
             widgetRef.current = cloudinaryRef.current.createUploadWidget({
-                cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo', // Fallback to 'demo' if not set
+                cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo',
                 uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'unsigned_preset',
                 multiple: multiple,
                 maxFiles: multiple ? 10 : 1,
@@ -29,15 +32,29 @@ const ImageUpload = ({ onUpload, multiple = false }) => {
                     onUpload(result.info.secure_url);
                 }
             });
+            setIsLoaded(true);
         }
     };
 
+    const handleOnLoad = () => {
+        initWidget();
+    };
+
     const openWidget = (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault();
         if (widgetRef.current) {
             widgetRef.current.open();
         } else {
-            alert('Widget chưa được tải. Vui lòng thử lại sau vài giây hoặc kiểm tra kết nối mạng.');
+            // Retry init if for some reason it wasn't ready
+            if (window.cloudinary) {
+                initWidget();
+                // Brief timeout to let it init
+                setTimeout(() => {
+                    if (widgetRef.current) widgetRef.current.open();
+                }, 100);
+            } else {
+                alert('Widget đang tải, vui lòng đợi thêm giây lát...');
+            }
         }
     };
 
@@ -46,8 +63,14 @@ const ImageUpload = ({ onUpload, multiple = false }) => {
             <Script
                 src="https://upload-widget.cloudinary.com/global/all.js"
                 onLoad={handleOnLoad}
+                onError={(e) => console.error("Cloudinary script failed to load", e)}
             />
-            <button className="btn btn-primary" onClick={openWidget} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>
+            <button
+                className={`btn btn-primary ${!isLoaded ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={openWidget}
+                style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}
+            // We permit clicking even if not "loaded" state to trigger the retry logic in openWidget
+            >
                 {multiple ? "Tải Nhiều Ảnh" : "Tải Ảnh Lên"}
             </button>
         </>
