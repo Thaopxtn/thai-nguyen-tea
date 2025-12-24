@@ -25,7 +25,9 @@ const ImageUpload = ({ onUpload, multiple = false }) => {
                 maxFiles: multiple ? 10 : 1,
                 sources: ['local', 'url', 'camera'],
                 clientAllowedFormats: ['image'],
-                maxImageFileSize: 2000000, // 2MB
+                maxImageFileSize: 10000000, // 10MB
+                maxImageWidth: 2000, // Resize large images to max 2000px width
+                validateMaxWidthHeight: true,
             }, function (error, result) {
                 if (!error && result && result.event === "success") {
                     console.log('Done! Here is the image info: ', result.info);
