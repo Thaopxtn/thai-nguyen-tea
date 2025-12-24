@@ -37,7 +37,7 @@ export default async function ProductDetailPage({ params }) {
     // Fetch data in parallel
     const [product, related] = await Promise.all([
         getProductById(id),
-        getRelatedProducts(id)
+        getRelatedProducts(id, 6)
     ]);
 
     if (!product) {
