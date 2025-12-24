@@ -10,6 +10,18 @@ export default function ProductDetailClient({ product, related }) {
     const [qty, setQty] = useState(1);
     const { addToCart } = useCart();
 
+    // Use images array if available, otherwise fallback to single image
+    const images = (product?.images && product.images.length > 0)
+        ? product.images
+        : (product?.image ? [product.image] : []);
+
+    const [activeImage, setActiveImage] = useState(images[0] || '/images/hero-bg.png');
+
+    // Update activeImage if product changes
+    if (activeImage !== images[0] && !images.includes(activeImage) && images.length > 0) {
+        setActiveImage(images[0]);
+    }
+
     // Guard: Ensure product exists
     if (!product) {
         return (
@@ -34,22 +46,53 @@ export default function ProductDetailClient({ product, related }) {
         <main className="section-padding page-section">
             <div className="container">
                 <div className="about-container" style={{ alignItems: 'start' }}>
-                    <div className="product-image" style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', width: '100%', maxWidth: '500px', aspectRatio: '1/1' }}>
-                        {product.originalPrice && safeNumber(product.originalPrice) > safeNumber(product.price) && (
-                            <div className="badge-discount" style={{ fontSize: '1.2rem', padding: '8px 16px', top: '20px', right: '20px' }}>
-                                -{Math.round(((safeNumber(product.originalPrice) - safeNumber(product.price)) / safeNumber(product.originalPrice)) * 100)}%
+                    <div style={{ width: '100%', maxWidth: '500px' }}>
+                        <div className="product-image" style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', width: '100%', aspectRatio: '1/1', marginBottom: '1rem' }}>
+                            {product.originalPrice && safeNumber(product.originalPrice) > safeNumber(product.price) && (
+                                <div className="badge-discount" style={{ fontSize: '1.2rem', padding: '8px 16px', top: '20px', right: '20px', zIndex: 10 }}>
+                                    -{Math.round(((safeNumber(product.originalPrice) - safeNumber(product.price)) / safeNumber(product.originalPrice)) * 100)}%
+                                </div>
+                            )}
+                            <Image
+                                src={activeImage}
+                                alt={safeString(product.name)}
+                                fill
+                                style={{ objectFit: 'cover' }}
+                                priority
+                                sizes="(max-width: 768px) 100vw, 500px"
+                            />
+                        </div>
+
+                        {/* Thumbnail Grid */}
+                        {images.length > 1 && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                {images.map((img, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => setActiveImage(img)}
+                                        style={{
+                                            position: 'relative',
+                                            aspectRatio: '1/1',
+                                            cursor: 'pointer',
+                                            borderRadius: '4px',
+                                            overflow: 'hidden',
+                                            border: activeImage === img ? '2px solid var(--color-primary)' : '2px solid transparent'
+                                        }}
+                                    >
+                                        <Image
+                                            src={img}
+                                            alt={`Thumbnail ${index + 1}`}
+                                            fill
+                                            style={{ objectFit: 'cover' }}
+                                            sizes="100px"
+                                        />
+                                    </div>
+                                ))}
                             </div>
                         )}
-                        <Image
-                            src={safeString(product.image) || '/images/hero-bg.png'}
-                            alt={safeString(product.name)}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            priority
-                            sizes="(max-width: 768px) 100vw, 500px"
-                        />
                     </div>
-                    <div className="product-info" style={{ textAlign: 'left', flex: 1 }}>
+
+                    <div className="product-info" style={{ textAlign: 'left', flex: 1, paddingLeft: '2rem' }}>
                         <span className="product-category" style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>{safeString(product.category)}</span>
                         <h1 className="product-title" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{safeString(product.name)}</h1>
 

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
             openGraph: {
                 title: product.name,
                 description: product.desc,
-                images: [product.image],
+                images: product.images && product.images.length > 0 ? product.images : [product.image],
             },
         };
     } catch (error) {
