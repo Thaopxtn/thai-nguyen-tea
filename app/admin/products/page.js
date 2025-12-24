@@ -12,7 +12,8 @@ export default function AdminProductsPage() {
         price: '',
         category: '',
         image: '',
-        images: []
+        images: [],
+        desc: ''
     });
 
     const fetchProducts = () => fetch('/api/products').then(res => res.json()).then(setProducts);
@@ -22,13 +23,19 @@ export default function AdminProductsPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const method = formData.id ? 'PUT' : 'POST';
-        // Ensure images array includes the main image if it's empty, or vice versa if needed.
-        // For simplicity, we keep them somewhat independent but synced logic could be added.
+
+        // SYNC LOGIC: The first image in the list is ALWAYS the main image
+        const finalData = { ...formData };
+        if (finalData.images && finalData.images.length > 0) {
+            finalData.image = finalData.images[0];
+        } else {
+            finalData.image = '';
+        }
 
         await fetch('/api/products', {
             method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(finalData)
         });
         setShowModal(false);
         fetchProducts();
@@ -43,33 +50,47 @@ export default function AdminProductsPage() {
     };
 
     const handleEdit = (p) => {
-        // Ensure p.images is an array
-        setFormData({ ...p, images: p.images || [] });
+        // MIGRATION LOGIC: If existing product has 'image' but it's not in 'images', add it.
+        let currentImages = p.images || [];
+        if (p.image && !currentImages.includes(p.image)) {
+            currentImages = [p.image, ...currentImages];
+        }
+
+        setFormData({
+            ...p,
+            price: p.price || '',
+            images: currentImages
+        });
         setShowModal(true);
     };
 
     const resetForm = () => {
-        setFormData({ id: '', name: '', price: '', category: '', image: '', images: [] });
+        setFormData({ id: '', name: '', price: '', category: '', image: '', images: [], desc: '' });
     };
 
-    // Callback for main image upload
-    const handleMainImageUpload = (url) => {
-        setFormData(prev => ({ ...prev, image: url }));
-    };
-
-    // Callback for gallery upload
-    const handleGalleryUpload = (url) => {
+    // Callback for gallery upload (appends to list)
+    const handleImageUpload = (url) => {
         setFormData(prev => ({
             ...prev,
             images: [...prev.images, url]
         }));
     };
 
-    const removeGalleryImage = (indexToRemove) => {
+    const removeImage = (indexToRemove) => {
         setFormData(prev => ({
             ...prev,
             images: prev.images.filter((_, index) => index !== indexToRemove)
         }));
+    };
+
+    const moveImage = (index, direction) => {
+        const newImages = [...formData.images];
+        if (direction === 'left' && index > 0) {
+            [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+        } else if (direction === 'right' && index < newImages.length - 1) {
+            [newImages[index + 1], newImages[index]] = [newImages[index], newImages[index + 1]];
+        }
+        setFormData(prev => ({ ...prev, images: newImages }));
     };
 
     return (
@@ -82,36 +103,48 @@ export default function AdminProductsPage() {
                     </button>
                 </div>
 
-                <div style={{ overflowX: 'auto' }}>
-                    <table className="cart-table" style={{ minWidth: '800px' }}>
-                        <thead>
+                <div style={{ overflowX: 'auto', background: 'white', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                    <table className="cart-table" style={{ minWidth: '800px', width: '100%', borderCollapse: 'collapse' }}>
+                        <thead style={{ background: '#f8f9fa' }}>
                             <tr>
-                                <th>Ảnh</th>
-                                <th>Tên</th>
-                                <th>Giá</th>
-                                <th>Danh Mục</th>
-                                <th>Hành Động</th>
+                                <th style={{ padding: '1rem', textAlign: 'left' }}>Ảnh</th>
+                                <th style={{ padding: '1rem', textAlign: 'left' }}>Tên Sản Phẩm</th>
+                                <th style={{ padding: '1rem', textAlign: 'left' }}>Giá</th>
+                                <th style={{ padding: '1rem', textAlign: 'left' }}>Danh Mục</th>
+                                <th style={{ padding: '1rem', textAlign: 'right' }}>Hành Động</th>
                             </tr>
                         </thead>
                         <tbody>
                             {products.map(p => (
-                                <tr key={p.id}>
-                                    <td>
-                                        <div style={{ width: 50, height: 50, position: 'relative', overflow: 'hidden', borderRadius: 4 }}>
+                                <tr key={p.id} style={{ borderBottom: '1px solid #eee' }}>
+                                    <td style={{ padding: '1rem' }}>
+                                        <div style={{ width: 60, height: 60, borderRadius: 4, overflow: 'hidden', border: '1px solid #ddd' }}>
                                             <img src={p.image || '/images/hero-bg.png'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={p.name} />
                                         </div>
                                     </td>
-                                    <td>
-                                        <div style={{ fontWeight: 600 }}>{p.name}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#666' }}>ID: {p.id}</div>
+                                    <td style={{ padding: '1rem' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '1rem' }}>{p.name}</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#888' }}>ID: {p.id}</div>
                                     </td>
-                                    <td>{Number(p.price).toLocaleString()}₫</td>
-                                    <td>{p.category}</td>
-                                    <td>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                            <button className="btn-icon" onClick={() => handleEdit(p)} title="Sửa">✏️</button>
-                                            <button className="btn-icon" onClick={() => handleDelete(p.id)} title="Xóa" style={{ color: 'red' }}>🗑️</button>
-                                        </div>
+                                    <td style={{ padding: '1rem', color: 'var(--color-primary)', fontWeight: 'bold' }}>
+                                        {Number(p.price).toLocaleString()}₫
+                                    </td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{ padding: '4px 8px', background: '#eef2ff', color: '#4f46e5', borderRadius: 4, fontSize: '0.9rem' }}>
+                                            {p.category}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                        <button
+                                            onClick={() => handleEdit(p)}
+                                            className="btn btn-primary"
+                                            style={{ marginRight: 8, padding: '6px 12px', fontSize: '0.9rem' }}
+                                        >Sửa</button>
+                                        <button
+                                            onClick={() => handleDelete(p.id)}
+                                            className="btn"
+                                            style={{ background: '#fee2e2', color: '#b91c1c', padding: '6px 12px', fontSize: '0.9rem', border: 'none' }}
+                                        >Xóa</button>
                                     </td>
                                 </tr>
                             ))}
@@ -121,66 +154,117 @@ export default function AdminProductsPage() {
 
                 {/* Modal */}
                 {showModal && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 }}>
-                        <form onSubmit={handleSubmit} style={{ background: 'white', padding: '2rem', borderRadius: 8, width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-                            <h3 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>{formData.id ? 'Sửa Sản Phẩm' : 'Thêm Sản Phẩm'}</h3>
+                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000, padding: '20px' }}>
+                        <form onSubmit={handleSubmit} style={{ background: 'white', padding: '2rem', borderRadius: 12, width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#111' }}>{formData.id ? 'Cập Nhật Sản Phẩm' : 'Thêm Mới Sản Phẩm'}</h3>
+                                <button type="button" onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#666' }}>&times;</button>
+                            </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="mb-2">
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Tên sản phẩm</label>
-                                    <input className="qty-input" style={{ width: '100%' }} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+                            <div className="grid grid-cols-2 gap-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Tên sản phẩm <span style={{ color: 'red' }}>*</span></label>
+                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required placeholder="Ví dụ: Trà Tân Cương" />
                                 </div>
-                                <div className="mb-2">
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Giá (VND)</label>
-                                    <input className="qty-input" style={{ width: '100%' }} type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} required />
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Giá bán (VNĐ) <span style={{ color: 'red' }}>*</span></label>
+                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} required />
                                 </div>
-                                <div className="mb-2">
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Danh mục</label>
-                                    <input className="qty-input" style={{ width: '100%' }} value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required />
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Danh mục <span style={{ color: 'red' }}>*</span></label>
+                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required list="categories" />
+                                    <datalist id="categories">
+                                        <option value="Cao Cấp" />
+                                        <option value="Truyền Thống" />
+                                        <option value="Thượng Hạng" />
+                                    </datalist>
+                                </div>
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Mô tả ngắn</label>
+                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.desc || ''} onChange={e => setFormData({ ...formData, desc: e.target.value })} placeholder="Mô tả ngắn về sản phẩm..." />
                                 </div>
                             </div>
 
-                            <div className="mb-4" style={{ marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Ảnh Đại Diện</label>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                    <div style={{ width: 80, height: 80, border: '1px dashed #ccc', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', borderRadius: 4 }}>
-                                        {formData.image ? <img src={formData.image} alt="Main" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '0.8rem', color: '#999' }}>Chưa có</span>}
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <input
-                                            className="qty-input"
-                                            style={{ width: '100%', marginBottom: '0.5rem' }}
-                                            value={formData.image}
-                                            onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                            placeholder="Dán link ảnh hoặc tải lên..."
-                                        />
-                                        <ImageUpload onUpload={handleMainImageUpload} />
-                                    </div>
+                            {/* UNIFIED IMAGE MANAGEMENT */}
+                            <div style={{ borderTop: '1px solid #eee', paddingTop: '1.5rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <label style={{ fontWeight: 600, fontSize: '1.1rem' }}>Quản Lý Hình Ảnh</label>
+                                    <ImageUpload onUpload={handleImageUpload} multiple={true} />
                                 </div>
-                            </div>
+                                <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>
+                                    Ảnh đầu tiên sẽ là <strong>Ảnh Đại Diện</strong>. Sử dụng nút mũi tên để thay đổi vị trí.
+                                </p>
 
-                            <div className="mb-4">
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Bộ Sưu Tập Ảnh (Gallery)</label>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '1rem' }}>
-                                    {formData.images && formData.images.map((img, idx) => (
-                                        <div key={idx} style={{ position: 'relative', width: 60, height: 60 }}>
-                                            <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 4 }} />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeGalleryImage(idx)}
-                                                style={{ position: 'absolute', top: -5, right: -5, background: 'red', color: 'white', borderRadius: '50%', width: 18, height: 18, border: 'none', cursor: 'pointer', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                            >X</button>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '16px' }}>
+                                    {formData.images.map((img, idx) => (
+                                        <div key={idx} style={{
+                                            position: 'relative',
+                                            aspectRatio: '1/1',
+                                            borderRadius: 8,
+                                            overflow: 'hidden',
+                                            border: idx === 0 ? '3px solid var(--color-primary)' : '1px solid #ddd',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                        }}>
+                                            <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+                                            {/* Badge for Main Image */}
+                                            {idx === 0 && (
+                                                <span style={{
+                                                    position: 'absolute', top: 0, left: 0,
+                                                    background: 'var(--color-primary)', color: 'white',
+                                                    fontSize: '0.7rem', padding: '2px 8px',
+                                                    borderBottomRightRadius: 8
+                                                }}>★ ĐẠI DIỆN</span>
+                                            )}
+
+                                            {/* Overlay Controls */}
+                                            <div style={{
+                                                position: 'absolute', bottom: 0, left: 0, width: '100%',
+                                                background: 'rgba(0,0,0,0.7)', padding: '5px',
+                                                display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                                            }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(idx, 'left')}
+                                                    disabled={idx === 0}
+                                                    style={{ color: 'white', background: 'none', border: 'none', cursor: idx === 0 ? 'default' : 'pointer', opacity: idx === 0 ? 0.3 : 1 }}
+                                                >◀</button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(idx)}
+                                                    style={{ color: '#ff6b6b', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                                                    title="Xóa ảnh"
+                                                >✖</button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(idx, 'right')}
+                                                    disabled={idx === formData.images.length - 1}
+                                                    style={{ color: 'white', background: 'none', border: 'none', cursor: idx === formData.images.length - 1 ? 'default' : 'pointer', opacity: idx === formData.images.length - 1 ? 0.3 : 1 }}
+                                                >▶</button>
+                                            </div>
                                         </div>
                                     ))}
-                                    <div style={{ width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <ImageUpload onUpload={handleGalleryUpload} multiple={true} />
-                                    </div>
+
+                                    {/* Upload Placeholder if empty */}
+                                    {formData.images.length === 0 && (
+                                        <div style={{
+                                            border: '2px dashed #ddd', borderRadius: 8,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: '#999', fontSize: '0.9rem', flexDirection: 'column', gap: '5px'
+                                        }}>
+                                            <span>Chưa có ảnh</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'flex-end' }}>
-                                <button type="button" className="btn btn-accent" style={{ padding: '0.8rem 1.5rem' }} onClick={() => setShowModal(false)}>Hủy Bỏ</button>
-                                <button type="submit" className="btn btn-primary" style={{ padding: '0.8rem 2rem' }}>Lưu Sản Phẩm</button>
+                            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', borderTop: '1px solid #eee', paddingTop: '1.5rem', justifyContent: 'flex-end' }}>
+                                <button type="button" className="btn btn-accent" style={{ padding: '0.8rem 1.5rem', borderRadius: 6 }} onClick={() => setShowModal(false)}>Hủy Bỏ</button>
+                                <button type="submit" className="btn btn-primary" style={{ padding: '0.8rem 2.5rem', borderRadius: 6, fontWeight: 600 }}>
+                                    {formData.id ? 'Cập Nhật' : 'Tạo Mới'}
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -189,4 +273,3 @@ export default function AdminProductsPage() {
         </main>
     );
 }
-
