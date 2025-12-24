@@ -8,6 +8,7 @@ const ProductSchema = new mongoose.Schema({
     category: { type: String, required: true },
     image: String,
     images: { type: [String], default: [] },
+    isFeatured: { type: Boolean, default: false },
     desc: String,
     rating: { type: Number, required: true, default: 0 },
     numReviews: { type: Number, required: true, default: 0 },

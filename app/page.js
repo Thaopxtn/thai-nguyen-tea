@@ -51,6 +51,26 @@ export default async function Home() {
       <section id="products" className="section-padding">
         <div className="container">
 
+
+          {/* Featured Products Section */}
+          {products.some(p => p.isFeatured) && (
+            <div className="product-section mb-16" style={{ marginBottom: '5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '1.5rem', marginRight: '0.5rem', color: '#eab308' }}>★</span>
+                <h2 className="section-title" style={{ marginBottom: 0 }}>Sản Phẩm Nổi Bật</h2>
+                <span style={{ fontSize: '1.5rem', marginLeft: '0.5rem', color: '#eab308' }}>★</span>
+              </div>
+              <p className="subtitle">Những sản phẩm trà được yêu thích nhất, do chính tay bạn chọn lọc.</p>
+              <div className="products-grid">
+                {products
+                  .filter(p => p.isFeatured)
+                  .map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+              </div>
+            </div>
+          )}
+
           {/* Section 1: Thượng Hạng */}
           <div className="product-section mb-16" style={{ marginBottom: '5rem' }}>
             <h2 className="section-title">Sản Phẩm Thượng Hạng</h2>

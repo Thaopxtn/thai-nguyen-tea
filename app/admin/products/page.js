@@ -13,6 +13,7 @@ export default function AdminProductsPage() {
         category: '',
         image: '',
         images: [],
+        isFeatured: false,
         desc: ''
     });
 
@@ -59,13 +60,14 @@ export default function AdminProductsPage() {
         setFormData({
             ...p,
             price: p.price || '',
+            isFeatured: p.isFeatured || false,
             images: currentImages
         });
         setShowModal(true);
     };
 
     const resetForm = () => {
-        setFormData({ id: '', name: '', price: '', category: '', image: '', images: [], desc: '' });
+        setFormData({ id: '', name: '', price: '', category: '', image: '', images: [], isFeatured: false, desc: '' });
     };
 
     // Callback for gallery upload (appends to list)
@@ -229,6 +231,18 @@ export default function AdminProductsPage() {
                                         onChange={e => setFormData({ ...formData, desc: e.target.value })}
                                         placeholder="Mô tả chi tiết về sản phẩm..."
                                     />
+                                </div>
+                                <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center' }}>
+                                    <input
+                                        type="checkbox"
+                                        id="isFeatured"
+                                        checked={formData.isFeatured}
+                                        onChange={e => setFormData({ ...formData, isFeatured: e.target.checked })}
+                                        style={{ width: 20, height: 20, marginRight: 10, cursor: 'pointer' }}
+                                    />
+                                    <label htmlFor="isFeatured" style={{ cursor: 'pointer', fontWeight: 600, userSelect: 'none' }}>
+                                        Hiển thị trong "Sản Phẩm Nổi Bật" (Trang chủ)
+                                    </label>
                                 </div>
                             </div>
 
