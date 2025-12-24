@@ -164,24 +164,71 @@ export default function AdminProductsPage() {
                             <div className="grid grid-cols-2 gap-4" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Tên sản phẩm <span style={{ color: 'red' }}>*</span></label>
-                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required placeholder="Ví dụ: Trà Tân Cương" />
+                                    <input
+                                        className="qty-input"
+                                        style={{ width: '100%', padding: '10px' }}
+                                        value={formData.name}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        required
+                                        placeholder="Ví dụ: Trà Tân Cương"
+                                    />
                                 </div>
                                 <div>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Giá bán (VNĐ) <span style={{ color: 'red' }}>*</span></label>
-                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} type="number" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} required />
+                                    <input
+                                        className="qty-input"
+                                        style={{ width: '100%', padding: '10px' }}
+                                        type="text"
+                                        value={formData.price ? Number(formData.price).toLocaleString('vi-VN') : ''}
+                                        onChange={e => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setFormData({ ...formData, price: val });
+                                        }}
+                                        required
+                                        placeholder="0"
+                                    />
                                 </div>
-                                <div>
+                                <div style={{ gridColumn: '1 / -1' }}>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Danh mục <span style={{ color: 'red' }}>*</span></label>
-                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required list="categories" />
-                                    <datalist id="categories">
-                                        <option value="Cao Cấp" />
-                                        <option value="Truyền Thống" />
-                                        <option value="Thượng Hạng" />
-                                    </datalist>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                                        {['Cao Cấp', 'Truyền Thống', 'Thượng Hạng', 'Quà Biếu'].map(cat => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, category: cat })}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    borderRadius: '20px',
+                                                    border: formData.category === cat ? '2px solid var(--color-primary)' : '1px solid #ddd',
+                                                    background: formData.category === cat ? '#f0f9ff' : 'white',
+                                                    color: formData.category === cat ? 'var(--color-primary)' : '#666',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.9rem'
+                                                }}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <input
+                                        className="qty-input"
+                                        style={{ width: '100%', padding: '10px' }}
+                                        value={formData.category}
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                        required
+                                        placeholder="Hoặc nhập danh mục mới..."
+                                    />
                                 </div>
-                                <div>
+                                <div style={{ gridColumn: '1 / -1' }}>
                                     <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, fontSize: '0.95rem' }}>Mô tả ngắn</label>
-                                    <input className="qty-input" style={{ width: '100%', padding: '10px' }} value={formData.desc || ''} onChange={e => setFormData({ ...formData, desc: e.target.value })} placeholder="Mô tả ngắn về sản phẩm..." />
+                                    <textarea
+                                        className="qty-input"
+                                        style={{ width: '100%', padding: '10px', fontFamily: 'inherit' }}
+                                        rows={4}
+                                        value={formData.desc || ''}
+                                        onChange={e => setFormData({ ...formData, desc: e.target.value })}
+                                        placeholder="Mô tả chi tiết về sản phẩm..."
+                                    />
                                 </div>
                             </div>
 
